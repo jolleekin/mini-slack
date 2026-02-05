@@ -1,0 +1,12 @@
+{
+  "name": "@mini-slack/wss",
+  "version": "1.0.0",
+  "description": "WebSocket Server for mini-slack",
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "@mini-slack/errors",
+  "version": "1.0.0",
+  "description": "Standard application error classes",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "@mini-slack/auth-client",
+  "version": "1.0.0",
+  "description": "Client for service-to-service authentication",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts"
+}

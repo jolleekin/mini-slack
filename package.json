@@ -1,0 +1,14 @@
+{
+  "name": "mini-slack",
+  "version": "1.0.0",
+  "description": "Monorepo for MiniSlack (a simple Slack clone)",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*",
+    "workers/*"
+  ],
+  "author": "Man Hoang <jolleekin@outlook.com>",
+  "license": "MIT",
+  "type": "module"
+}

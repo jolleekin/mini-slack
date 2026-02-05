@@ -1,0 +1,187 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow-end" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+    </marker>
+    <marker id="arrow-start" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 10 0 L 0 5 L 10 10 z" fill="#475569" />
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feOffset dx="1" dy="1" result="offsetBlur" />
+      <feMerge>
+        <feMergeNode in="offsetBlur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <linearGradient id="clientGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#CBD5E1" />
+    </linearGradient>
+    <linearGradient id="monoGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#EFF6FF" />
+      <stop offset="100%" stop-color="#DBEAFE" />
+    </linearGradient>
+    <linearGradient id="gateGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D1FAE5" />
+      <stop offset="100%" stop-color="#6EE7B7" />
+    </linearGradient>
+    <linearGradient id="svcGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#DBEAFE" />
+      <stop offset="100%" stop-color="#93C5FD" />
+    </linearGradient>
+    <linearGradient id="idGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E0E7FF" />
+      <stop offset="100%" stop-color="#8E99FB" />
+    </linearGradient>
+    <linearGradient id="workGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#EDE9FE" />
+      <stop offset="100%" stop-color="#A78BFA" />
+    </linearGradient>
+    <linearGradient id="storeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FEF3C7" />
+      <stop offset="100%" stop-color="#FCD34D" />
+    </linearGradient>
+    <linearGradient id="extGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFC16C" />
+      <stop offset="100%" stop-color="#F58025" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="1250" fill="#ffffff" />
+  
+  <text x="800" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1E293B" stroke="none">MiniSlack Phase 1 Architecture (Modular Monolith)</text>
+
+  <!-- TIER SEPARATORS -->
+  <g stroke="#d6dbe2" stroke-width="1" stroke-dasharray="6,6">
+    <line x1="250" y1="130" x2="250" y2="1100" />
+    <line x1="820" y1="130" x2="820" y2="1100" />
+    <line x1="1060" y1="130" x2="1060" y2="1100" />
+    <line x1="1380" y1="130" x2="1380" y2="1100" />
+  </g>
+
+  <!-- TIER LABELS -->
+  <text x="125" y="120" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#94A3B8" stroke="none">1. CLIENT LAYER</text>
+  <text x="535" y="120" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#94A3B8" stroke="none">2-3. APPLICATION TIER</text>
+  <text x="940" y="120" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#94A3B8" stroke="none">4. DATA LAYER</text>
+  <text x="1220" y="120" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#94A3B8" stroke="none">5. BACKGROUND TASKS</text>
+  <text x="1480" y="120" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#94A3B8" stroke="none">6. REAL-TIME INFRA</text>
+
+  <!-- TIER 6: REAL-TIME SPINES -->
+  <g filter="url(#shadow)">
+    <rect x="1440" y="200" width="40" height="720" rx="20" fill="url(#storeGrad)" stroke="#B45309" stroke-width="2" />
+    <text x="1460" y="560" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#78350F" stroke="none" transform="rotate(-90, 1460, 560)">REDIS (EVENT BUS / CACHE)</text>
+  </g>
+
+  <!-- CLIENT (SPA) -->
+  <path d="M 40 510 L 65 460 L 155 460 L 180 510 L 155 560 L 65 560 Z" stroke="#64748B" stroke-width="2" fill="url(#clientGrad)" filter="url(#shadow)" />
+  <text x="110" y="515" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#334155" stroke="none">Client (SPA)</text>
+
+  <!-- NEXT.JS MONOLITH CONTAINER -->
+  <rect x="280" y="200" width="510" height="550" rx="20" fill="url(#monoGrad)" stroke="#2563EB" stroke-width="1.5" stroke-dasharray="10,5" />
+  <text x="535" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1E40AF" stroke="none">Next.js 16+ Application</text>
+
+  <!-- SUBTIERS INSIDE MONOLITH -->
+  <g filter="url(#shadow)">
+    <rect x="300" y="260" width="120" height="460" rx="8" fill="url(#gateGrad)" stroke="#059669" stroke-dasharray="4,2" stroke-width="2" />
+    <text x="360" y="450" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#064E3B" stroke="none">
+      <tspan x="360" dy="0">Auth</tspan>
+      <tspan x="360" dy="20">Middleware</tspan>
+      <tspan x="360" dy="20">&amp;</tspan>
+      <tspan x="360" dy="20">Enrichment</tspan>
+    </text>
+
+    <rect x="440" y="260" width="120" height="350" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="2" />
+    <text x="500" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#475569" stroke="none">
+      <tspan x="500" dy="0">API</tspan>
+      <tspan x="500" dy="20">Routes</tspan>
+      <tspan x="500" dy="20">(/api/*)</tspan>
+    </text>
+
+    <rect x="445" y="640" width="110" height="60" rx="8" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="4,2" />
+    <text x="500" y="675" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#4338CA" stroke="none">jwks.json</text>
+
+    <rect x="580" y="260" width="190" height="460" rx="8" fill="#ffffff" stroke="#2563EB" stroke-width="1.5" />
+    <text x="675" y="285" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1E40AF" stroke="none">FEATURE DOMAINS</text>
+    
+    <rect x="595" y="300" width="160" height="70" rx="6" fill="url(#svcGrad)" stroke="#1E40AF" stroke-width="1" />
+    <text x="675" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1E40AF" stroke="none">Messaging</text>
+
+    <rect x="595" y="380" width="160" height="70" rx="6" fill="url(#svcGrad)" stroke="#1E40AF" stroke-width="1" />
+    <text x="675" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1E40AF" stroke="none">Search</text>
+
+    <rect x="595" y="460" width="160" height="70" rx="6" fill="url(#svcGrad)" stroke="#1E40AF" stroke-width="1" />
+    <text x="675" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1E40AF" stroke="none">Subscription</text>
+
+    <rect x="595" y="635" width="160" height="65" rx="6" fill="url(#idGrad)" stroke="#312E81" stroke-width="1" />
+    <text x="675" y="675" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#312E81" stroke="none">Identity</text>
+  </g>
+
+  <!-- WS SERVICE -->
+  <rect x="280" y="800" width="510" height="120" rx="12" stroke="#059669" stroke-width="2" fill="url(#gateGrad)" filter="url(#shadow)" />
+  <text x="535" y="865" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#064E3B" stroke="none">WebSocket Service (Live Events)</text>
+
+  <!-- DATA LAYER -->
+  <g filter="url(#shadow)">
+    <path d="M 865 245 L 865 295 A 75 12 0 0 0 1015 295 L 1015 245 A 75 12 0 0 1 865 245 Z" fill="url(#extGrad)" stroke="#B45309" stroke-width="2" />
+    <ellipse cx="940" cy="245" rx="75" ry="12" fill="#FFD6A4" stroke="#B45309" stroke-width="2" />
+    <text x="940" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#78350F" stroke="none">Blob Store (S3)</text>
+
+    <path d="M 865 425 L 865 475 A 75 12 0 0 0 1015 475 L 1015 425 A 75 12 0 0 1 865 425 Z" fill="url(#storeGrad)" stroke="#B45309" stroke-width="2" />
+    <ellipse cx="940" cy="425" rx="75" ry="12" fill="#FEF3C7" stroke="#B45309" stroke-width="2" />
+    <text x="940" y="460" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#78350F" stroke="none">PostgreSQL</text>
+  </g>
+
+  <!-- WORKERS (Restored Width with 2-line text) -->
+  <g filter="url(#shadow)">
+    <rect x="1140" y="220" width="160" height="100" rx="20" stroke="#7C3AED" stroke-width="2" fill="url(#workGrad)" stroke-dasharray="6,3" />
+    <text x="1220" y="260" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#4C1D95" stroke="none">
+      <tspan x="1220" dy="0">File Cleanup</tspan>
+      <tspan x="1220" dy="20">Worker</tspan>
+    </text>
+
+    <rect x="1140" y="400" width="160" height="100" rx="20" stroke="#7C3AED" stroke-width="2" fill="url(#workGrad)" stroke-dasharray="6,3" />
+    <text x="1220" y="440" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#4C1D95" stroke="none">
+      <tspan x="1220" dy="0">Messaging</tspan>
+      <tspan x="1220" dy="20">Outbox Worker</tspan>
+    </text>
+  </g>
+
+  <!-- CONNECTIONS -->
+  <g stroke="#64748B" stroke-width="1.5" fill="none">
+    <path d="M 180 510 L 300 510" marker-end="url(#arrow-end)" marker-start="url(#arrow-start)" stroke-width="2" />
+    <path d="M 420 540 L 440 540" marker-end="url(#arrow-end)" marker-start="url(#arrow-start)" stroke-width="1.5" />
+    <path d="M 560 540 L 580 540" marker-end="url(#arrow-end)" marker-start="url(#arrow-start)" stroke-width="1.5" />
+    <path d="M 555 670 L 595 670" stroke="#4F46E5" stroke-dasharray="2,2" marker-start="url(#arrow-start)" />
+    <path d="M 755 670 Q 1100 670 1440 670" stroke="#78350F" stroke-dasharray="6,3" marker-end="url(#arrow-end)" marker-start="url(#arrow-start)" />
+    <text x="1100" y="660" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#78350F" stroke="none">Read/Write Refresh Tokens</text>
+    <path d="M 770 450 L 865 450" marker-end="url(#arrow-end)" marker-start="url(#arrow-start)" stroke-width="2" />
+    <path d="M 770 340 L 865 270" marker-end="url(#arrow-end)" marker-start="url(#arrow-start)" stroke-width="1.5" />
+    <text x="820" y="325" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#312E81" stroke="none" transform="rotate(-40, 820, 325)">Sign URL</text>
+    <path d="M 180 500 Q 250 40 865 260" stroke-dasharray="6,3" marker-end="url(#arrow-end)" marker-start="url(#arrow-start)" />
+    <text x="200" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#475569" stroke="none" transform="rotate(-60, 200, 360)">Direct Upload/Download</text>
+    <path d="M 1140 450 L 1015 450" stroke-dasharray="6,3" marker-start="url(#arrow-start)" />
+    <path d="M 1300 450 L 1440 450" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
+    <path d="M 1140 270 L 1015 270" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
+    <text x="1070" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4C1D95" stroke="none">Delete Objects</text>
+    <path d="M 1140 280 L 940 410" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
+    <text x="1050" y="360" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4C1D95" stroke="none" transform="rotate(-30, 1050, 360)">Mark Deleted</text>
+    <path d="M 1440 860 L 790 860" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
+    <text x="1100" y="855" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#78350F" stroke="none">Read Membership / Track Events</text>
+    <path d="M 280 860 Q 180 860 180 520" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
+    <line x1="500" y1="700" x2="500" y2="800" stroke="#4F46E5" stroke-dasharray="3,3" marker-end="url(#arrow-end)" />
+    <text x="505" y="780" text-anchor="start" font-family="Arial, sans-serif" font-size="12" fill="#4338CA" stroke="none">JWKS Key Fetch</text>
+  </g>
+
+  <!-- LEGEND -->
+  <g transform="translate(50, 1070)">
+    <rect width="350" height="100" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5" />
+    <text x="160" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1E293B" stroke="none">Phase 1 Legend (Logical &amp; Sync)</text>
+    <line x1="20" y1="40" x2="80" y2="40" stroke="#64748B" stroke-width="2" />
+    <text x="95" y="44" font-family="Arial, sans-serif" font-size="14" fill="#475569" stroke="none">Synchronous (Blocking Response)</text>
+    <line x1="20" y1="65" x2="80" y2="65" stroke="#64748B" stroke-width="1.5" stroke-dasharray="6,3" />
+    <text x="95" y="69" font-family="Arial, sans-serif" font-size="14" fill="#475569" stroke="none">Asynchronous / REAL-TIME</text>
+    <line x1="20" y1="85" x2="80" y2="85" stroke="#4F46E5" stroke-width="1" stroke-dasharray="3,3" />
+    <text x="95" y="89" font-family="Arial, sans-serif" font-size="14" fill="#4338CA" stroke="none">Identity Trust Verification</text>
+  </g>
+</svg>

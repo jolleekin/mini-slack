@@ -1,0 +1,12 @@
+{
+  "name": "@mini-slack/logger",
+  "version": "1.0.0",
+  "description": "Standardized logging library for Mini-Slack",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  }
+}

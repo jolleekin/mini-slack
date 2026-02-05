@@ -1,0 +1,8 @@
+{
+  "name": "@mini-slack/id-gen",
+  "version": "1.0.0",
+  "description": "Distributed Snowflake ID generator",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts"
+}
