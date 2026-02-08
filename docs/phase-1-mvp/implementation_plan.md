@@ -88,7 +88,7 @@ CREATE TABLE users (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   image_url VARCHAR(512),
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Workspaces (Messaging Domain)
@@ -97,7 +97,7 @@ CREATE TABLE workspaces (
   name VARCHAR(255) NOT NULL,
   slug VARCHAR(255) UNIQUE NOT NULL,
   owner_id BIGINT REFERENCES users(id),
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Workspace Members (Messaging Domain - Denormalized for read performance)
@@ -107,7 +107,7 @@ CREATE TABLE workspace_members (
   user_name VARCHAR(255),          -- Denormalized
   user_image_url VARCHAR(512),     -- Denormalized
   role VARCHAR(50) DEFAULT 'member',
-  created_at TIMESTAMP DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, user_id)
 );
 
@@ -117,7 +117,7 @@ CREATE TABLE channels (
   id BIGINT,                       -- Snowflake ID
   name VARCHAR(255) NOT NULL,
   owner_id BIGINT REFERENCES users(id),
-  created_at TIMESTAMP DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, id)
 );
 
@@ -139,24 +139,35 @@ CREATE TABLE messages (
   channel_id BIGINT,
   id BIGINT,                       -- Snowflake ID
   content TEXT NOT NULL,
-  author_id BIGINT REFERENCES users(id),
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP,
+  author_id BIGINT REFERENCES users(id), -- NULL for system messages
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ,
   PRIMARY KEY (workspace_id, channel_id, id),
   FOREIGN KEY (workspace_id, channel_id) REFERENCES channels(workspace_id, id)
 );
 
--- Attachments (Messaging Domain)
-CREATE TABLE attachments (
+-- Files (Messaging Domain - Workspace Scoped for isolation/billing)
+CREATE TABLE files (
+  workspace_id BIGINT REFERENCES workspaces(id),
+  id BIGINT,           -- Snowflake ID
+  uploader_id BIGINT REFERENCES users(id),
+  url VARCHAR(512) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  type VARCHAR(100),
+  size BIGINT,
+  status VARCHAR(50) DEFAULT 'pending',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (workspace_id, id)
+);
+
+-- Message Files (Many-to-Many link)
+CREATE TABLE message_files (
   workspace_id BIGINT,
   channel_id BIGINT,
-  id BIGINT,                       -- Snowflake ID
   message_id BIGINT,
-  file_url VARCHAR(512) NOT NULL,
-  file_type VARCHAR(100),
-  file_size BIGINT,
-  created_at TIMESTAMP DEFAULT NOW(),
-  PRIMARY KEY (workspace_id, channel_id, id),
+  file_id BIGINT REFERENCES files(id),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (workspace_id, channel_id, message_id, file_id),
   FOREIGN KEY (workspace_id, channel_id, message_id) REFERENCES messages(workspace_id, channel_id, id)
 );
 
@@ -168,21 +179,22 @@ CREATE TABLE reactions (
   message_id BIGINT,
   user_id BIGINT REFERENCES users(id),
   emoji VARCHAR(50) NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, channel_id, id),
   FOREIGN KEY (workspace_id, channel_id, message_id) REFERENCES messages(workspace_id, channel_id, id)
 );
 
 -- Transactional Outbox
 CREATE TABLE outbox (
-  id BIGSERIAL PRIMARY KEY,
   workspace_id BIGINT,              -- For partitioned consumption
+  id BIGSERIAL,
   aggregate_type VARCHAR(50) NOT NULL,
   aggregate_id BIGINT NOT NULL,
   event_type VARCHAR(100) NOT NULL,
   payload JSONB NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW(),
-  published_at TIMESTAMP
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  published_at TIMESTAMPTZ,
+  PRIMARY KEY (workspace_id, id)
 );
 
 CREATE INDEX idx_outbox_unpublished ON outbox(created_at) WHERE published_at IS NULL;
@@ -192,12 +204,12 @@ CREATE INDEX idx_outbox_unpublished ON outbox(created_at) WHERE published_at IS 
 
 ### Milestone 1: Foundation
 
-- [ ] **1.1 Monorepo Setup**
+- [x] **1.1 Monorepo Setup**
   - Initialize NPM workspaces
   - Configure TypeScript, ESLint, Prettier at root
   - Set up path aliases
 
-- [ ] **1.2 Snowflake ID Generator**
+- [x] **1.2 Snowflake ID Generator**
   - Implement in `packages/id-gen`
   - Custom epoch (2026-01-01)
   - Machine ID from environment variable
