@@ -1,7 +1,7 @@
 {
   "name": "@mini-slack/contracts",
   "version": "1.0.0",
-  "description": "Zod schemas and DTO types",
+  "description": "Shared types and DTOs",
   "type": "module",
   "main": "index.ts"
 }
