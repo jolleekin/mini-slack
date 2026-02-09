@@ -215,7 +215,7 @@ CREATE INDEX idx_outbox_unpublished ON outbox(created_at) WHERE published_at IS 
   - Machine ID from environment variable
   - Export `generateId()` function
 
-- [ ] **1.3 Shared Packages**
+- [x] **1.3 Shared Packages**
   - `packages/contracts`: Shared TypeScript types & DTOs (types only, no validation)
   - `packages/logger`: Pino-based structured logging
   - `packages/errors`: `AppError`, `NotFoundError`, `ValidationError`
