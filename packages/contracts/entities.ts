@@ -8,9 +8,7 @@ export type SnowflakeIdString = string;
 
 export interface User {
   id: SnowflakeIdString;
-  name: string;
   email: string;
-  imageUrl?: string | null;
   createdAt: Date;
 }
 
@@ -24,11 +22,29 @@ export interface Workspace {
 
 export type WorkspaceRole = "owner" | "admin" | "member";
 
+/**
+ * Workspace membership record partitioned by workspaceId.
+ * Used for workspace-level lookups (members of a workspace).
+ */
 export interface WorkspaceMember {
-  workspaceId: SnowflakeIdString;
+  workspaceId: SnowflakeIdString; // Partition Key
   userId: SnowflakeIdString;
-  userName?: string | null; // Denormalized.
-  userImageUrl?: string | null; // Denormalized.
+  userName: string; // Mandatory per-workspace name.
+  userImageUrl?: string | null; // Per-workspace avatar.
+  role: WorkspaceRole;
+  createdAt: Date;
+}
+
+/**
+ * Workspace membership record partitioned by userId.
+ * Used for user-level lookups (workspaces a user belongs to).
+ */
+export interface MemberedWorkspace {
+  userId: SnowflakeIdString; // Partition Key
+  workspaceId: SnowflakeIdString;
+  workspaceName: string; // Denormalized.
+  workspaceImageUrl?: string | null; // Denormalized.
+  workspaceSlug: string; // Denormalized.
   role: WorkspaceRole;
   createdAt: Date;
 }
@@ -47,8 +63,6 @@ export interface ChannelMember {
   workspaceId: SnowflakeIdString;
   channelId: SnowflakeIdString;
   userId: SnowflakeIdString;
-  userName?: string | null; // Denormalized.
-  userImageUrl?: string | null; // Denormalized.
   role: ChannelRole;
   lastSeenMessageId?: SnowflakeIdString | null;
 }

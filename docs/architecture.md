@@ -68,12 +68,12 @@ The "heart" of the system - domain-specific data stores.
 All tenant data is **partitioned by `workspace_id`** to ensure isolation and enable horizontal sharding.
 For distributed consistency, all partitioned entities use **Composite Primary Keys** in the format `(workspace_id, id)`.
 
-| Store               | Purpose                                       | Partitioning Strategy                                    |
-| ------------------- | --------------------------------------------- | -------------------------------------------------------- |
-| **Identity Store**  | User credentials, sessions (Identity domain)  | **Partitioned by `user_id`** (Hash) + Global Email Index |
-| **Messaging DB**    | Channels, messages, outbox (Messaging domain) | **Partitioned by `(workspace_id, channel_id)`**          |
-| **Search Index**    | Meilisearch/OpenSearch for full-text indexing | **Partitioned by `(workspace_id, channel_id)`**          |
-| **Subscription DB** | Plans, seats, billing (Subscription domain)   | **Partitioned by `workspace_id`**                        |
+| Store               | Purpose                                                 | Partitioning Strategy                                    |
+| ------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| **Identity Store**  | User credentials, sessions, **MemberedWorkspaces**      | **Partitioned by `user_id`** (Hash) + Global Email Index |
+| **Messaging DB**    | Channels, messages, files, **WorkspaceMembers**, outbox | **Partitioned by `(workspace_id, channel_id)`**          |
+| **Search Index**    | Meilisearch/OpenSearch for full-text indexing           | **Partitioned by `(workspace_id, channel_id)`**          |
+| **Subscription DB** | Plans, seats, billing (Subscription domain)             | **Partitioned by `workspace_id`**                        |
 
 ### Tier 5: Worker Layer
 
@@ -85,7 +85,7 @@ Background processing and async tasks.
 | **Indexer Worker**          | Indexes new content for search                                               |
 | **File Cleanup Worker**     | Cleans up orphaned uploads and deleted attachments                           |
 | **Subscription Worker**     | Tracks usage, updates entitlements                                           |
-| **Profile Sync Worker**     | Syncs user profile updates (`USER_UPDATED`) to denormalized memberships      |
+| **Membership Sync Worker**  | Syncs workspace listings between stores                                      |
 
 ### Tier 6: Shared Infrastructure (Real-time Backbone)
 
@@ -179,20 +179,35 @@ Hybrid strategy combining performance with Zero Trust principles:
 
 - **API Gateway** verifies the JWT and attaches identity claims (`X-User-ID`, `X-Workspace-ID`) as trusted headers for downstream services.
 
-### 6. Profile Denormalization & Sync
+### 6. Per-Workspace Personas
 
-To maintain extreme performance, user profile data (`name`, `avatar`) is denormalized into **Workspace-Partitioned** tables like `WORKSPACE_MEMBER`.
+MiniSlack avoids global user profiles. Personas (name, avatar) are strictly scoped to a workspace membership.
 
-- **Reliability Pattern: Publish-then-Write**: To avoid the overhead of an outbox table for low-frequency updates, the **Identity Service** follows this sequence:
-  1.  **Publish**: Sends a `USER_UPDATED(user_id)` pointer-only event (contains no profile data).
-  2.  **Write**: Updates the Identity Store.
-- **Sync Flow**: Upon receiving the event, the **Profile Sync Worker** (Tier 5) pulls the latest data from the Identity Store.
-- **Resiliency**:
-  - If **Publish** fails: The update is aborted, ensuring no inconsistency.
-  - If **Write** fails: The worker pulls "old" data, resulting in a safe no-op.
-- **Latency Trade-off**: This approach favors **read speed** (zero joins) over **write-time consistency**.
+- **Storage**: Profile fields (`userName`, `userImageUrl`) are stored in the `WorkspaceMember` table.
+- **Updates**: Updating a profile in one workspace has zero impact on other workspaces.
+- **Internal Denormalization**: For extreme performance, the `Messaging Service` may fan-out profile updates to `ChannelMember` (and/or `Message`) records within the same workspace.
 
-### 6. File Handling & Storage
+### 7. Double-Sided Membership Sync
+
+To support O(1) workspace list retrieval and O(1) members-of-workspace retrieval, membership data is stored twice:
+
+1.  **`MemberedWorkspaces`** (User-Partitioned): Stored in Identity Store. Used for "What workspaces am I in?"
+2.  **`WorkspaceMembers`** (Workspace-Partitioned): Stored in Messaging Store. Used for "Who is in this workspace?"
+
+#### Synchronization Orchestration
+
+A **WorkspaceMembership Sync Worker** orchestrates consistency using the Event Bus:
+
+- **User Joins/Leaves Workspace**:
+  1. `Messaging Service` writes to (or deletes from) `WorkspaceMembers` table.
+  2. `Messaging Service` publishes `WORKSPACE_MEMBER_ADDED` or `WORKSPACE_MEMBER_REMOVED` event.
+  3. `Sync Worker` consumes event and updates `MemberedWorkspaces` table in Identity Store.
+- **Workspace Name/Icon Update**:
+  1. `Messaging Service` updates `Workspace` table.
+  2. `Messaging Service` publishes `WORKSPACE_UPDATED` event.
+  3. `Sync Worker` performs a **Fan-out** update to all affected rows in `MemberedWorkspaces` (Identity Store).
+
+### 8. File Handling & Storage
 
 To avoid bottlenecking the application server with file binaries, MiniSlack uses a **Direct-to-Object-Store** pattern.
 

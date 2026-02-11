@@ -4,15 +4,14 @@
  */
 
 import {
+  SnowflakeIdString,
   User,
   Workspace,
+  MemberedWorkspace,
   Channel,
   Message,
   File,
-  MessageFile,
   Reaction,
-  WorkspaceMember,
-  SnowflakeIdString,
 } from "./entities.ts";
 
 // --- Auth DTOs ---
@@ -36,10 +35,14 @@ export interface SigninResponse {
   user: User;
   token: string;
   refreshToken: string; // For native apps.
+  workspaces: MemberedWorkspace[];
 }
 
-export interface UpdateUserRequest {
-  name: string;
+/**
+ * Request to update a user's profile within a specific workspace.
+ */
+export interface UpdateWorkspaceProfileRequest {
+  name?: string;
   imageUrl?: string | null;
 }
 

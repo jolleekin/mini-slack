@@ -29,7 +29,7 @@ export enum AggregateType {
  */
 export enum EventType {
   // User
-  USER_UPDATED = "USER_UPDATED",
+  USER_SIGNED_IN = "USER_SIGNED_IN",
 
   // Workspace
   WORKSPACE_CREATED = "WORKSPACE_CREATED",
@@ -71,9 +71,9 @@ export interface BaseEvent<
   createdAt: Date;
 }
 
-export type UserUpdatedEvent = BaseEvent<
+export type UserSignedInEvent = BaseEvent<
   AggregateType.USER,
-  EventType.USER_UPDATED,
+  EventType.USER_SIGNED_IN,
   { user: User }
 >;
 
@@ -180,7 +180,7 @@ export type ReactionRemovedEvent = BaseEvent<
 >;
 
 export type AppEvent =
-  | UserUpdatedEvent
+  | UserSignedInEvent
   | WorkspaceCreatedEvent
   | WorkspaceUpdatedEvent
   | WorkspaceMemberAddedEvent

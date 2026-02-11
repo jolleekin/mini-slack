@@ -147,8 +147,8 @@
 
   <rect x="1145" y="765" width="150" height="80" rx="20" stroke="#7C3AED" stroke-width="2" fill="url(#workGrad)" filter="url(#shadow)" stroke-dasharray="6,3" />
   <text x="1220" y="800" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#4C1D95">
-    <tspan x="1220" dy="0">Profile Sync</tspan>
-    <tspan x="1220" dy="15">Worker</tspan>
+    <tspan x="1220" dy="0">Workspace Member</tspan>
+    <tspan x="1220" dy="15">Sync Worker</tspan>
   </text>
 
   <!-- ROW 5: IDENTITY -->
@@ -228,20 +228,17 @@
     <text x="830" y="915" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#475569" stroke="none">Read Membership</text>
 
     <path d="M 715 780 Q 800 720 1540 740" stroke="#4F46E5" stroke-width="2" marker-end="url(#arrow-end)" />
-    <text x="880" y="730" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#4F46E5" stroke="none" transform="rotate(-5,1000,730)">Publish USER_UPDATED (Pointer)</text>
+    <text x="880" y="730" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#4F46E5" stroke="none" transform="rotate(-5,1000,730)">Publish USER_SIGNED_IN</text>
     
     <path d="M 715 820 Q 800 880 1440 870" stroke="#4F46E5" stroke-width="2" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" />
     <text x="860" y="880" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#4F46E5" stroke="none" transform="rotate(7,1100,880)">Read/Write Refresh Tokens</text>
 
     <path d="M 1540 800 L 1295 800" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
-    <text x="1380" y="795" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#475569" stroke="none">Track USER_UPDATED</text>
+    <text x="1370" y="795" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#475569" stroke="none">Track WORKSPACE_*</text>
 
-    <path d="M 1145 800 L 1015 800" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="6,3" marker-start="url(#arrow-start)" />
-    <text x="1080" y="795" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4F46E5" stroke="none">Pull Data</text>
+    <path d="M 1145 800 L 1015 800" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
+    <text x="1080" y="795" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4F46E5" stroke="none">Sync Listings</text>
 
-    <path d="M 1145 805 L 1015 395" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
-    <text x="1080" y="620" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4F46E5" stroke="none" transform="rotate(-108, 1080, 620)">Propagate</text>
-    
     <path d="M 1540 950 L 715 950" stroke="#475569" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
     <text x="840" y="945" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#475569" stroke="none">Live Events (Fanout)</text>
 

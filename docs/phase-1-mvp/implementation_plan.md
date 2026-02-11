@@ -100,12 +100,10 @@ CREATE TABLE workspaces (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Workspace Members (Messaging Domain - Denormalized for read performance)
+-- Workspace Members (Messaging Domain)
 CREATE TABLE workspace_members (
   workspace_id BIGINT REFERENCES workspaces(id),
   user_id BIGINT REFERENCES users(id),
-  user_name VARCHAR(255),          -- Denormalized
-  user_image_url VARCHAR(512),     -- Denormalized
   role VARCHAR(50) DEFAULT 'member',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, user_id)
@@ -126,8 +124,6 @@ CREATE TABLE channel_members (
   workspace_id BIGINT,
   channel_id BIGINT,
   user_id BIGINT,
-  user_name VARCHAR(255),          -- Denormalized
-  user_image_url VARCHAR(512),     -- Denormalized
   last_seen_message_id BIGINT,
   PRIMARY KEY (workspace_id, channel_id, user_id),
   FOREIGN KEY (workspace_id, channel_id) REFERENCES channels(workspace_id, id)

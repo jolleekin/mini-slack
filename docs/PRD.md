@@ -45,7 +45,7 @@
 
 - **Authentication**: Users must be able to sign in via OAuth or Magic Link/OTP.
 - **Onboarding**: New users should be guided through a workspace creation or joining flow.
-- **Profile Management**: Users can update their name, avatar, and preferences.
+- **Profile Management**: Profile information (Name, Avatar) is managed **independently per workspace**. A global identity is maintained for authentication only.
 
 ### 3.2 Messaging
 
@@ -115,6 +115,7 @@ The system decouples Identity (Who you are) from Context (Where you are).
 - **Context Header**: Every API request includes `X-Workspace-ID: <wsId>` alongside the `Authorization: Bearer <token>` header.
 - **Switching**: To switch workspaces, the client simply updates the `X-Workspace-ID` header. **No re-authentication or token refresh is required.**
 - **Validation**: Services validate that `User ID` (from JWT) is a member of `Workspace ID` (from header) via a cached lookup.
+- **Membered Workspaces**: For efficient sidebar/switcher rendering, the system maintains a `MemberedWorkspaces` table partitioned by `user_id`. This allows listing a user's workspaces without cross-partition joins.
 
 ### 6.3 Real-time Messaging Flow
 
@@ -201,16 +202,17 @@ async function sendMessage(content: string) {
 
 ### Core Entities
 
-| Entity              | Description                                                                                                                                                     |
-| :------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **User**            | Global identity across all workspaces.                                                                                                                          |
-| **Workspace**       | Primary container for channels and members.                                                                                                                     |
-| **Channel**         | Scoped within a workspace.                                                                                                                                      |
-| **Message**         | Core unit of communication.                                                                                                                                     |
-| **WorkspaceMember** | Join table representing User + Workspace membership. Tracks roles (owner, admin, member) and permissions.                                                       |
-| **ChannelMember**   | Join table representing User + Channel membership. Tracks channel-specific roles and muting preferences.                                                        |
-| **File**            | Independent entity representing uploaded files. Scoped to workspace + channel. Supports dedicated file browser, independent metadata, and lifecycle management. |
-| **MessageFile**     | Join table enabling many-to-many relationship between messages and files. Optimized with lazy loading and indexed queries to avoid N+1 joins on message lists.  |
+| Entity                | Description                                                                                                                                                     |
+| :-------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **User**              | Global identity (ID, Email) for authentication. No persona information.                                                                                         |
+| **Workspace**         | Primary container for channels and members.                                                                                                                     |
+| **Channel**           | Scoped within a workspace.                                                                                                                                      |
+| **Message**           | Core unit of communication.                                                                                                                                     |
+| **WorkspaceMember**   | Join table representing User + Workspace membership. Partitioned by `workspace_id`. Tracks roles and profile (name, avatar).                                    |
+| **MemberedWorkspace** | Join table representing User + Workspace membership. Partitioned by `user_id`. Used for efficient workspace list retrieval.                                     |
+| **ChannelMember**     | Join table representing User + Channel membership. Tracks channel-specific roles and muting preferences.                                                        |
+| **File**              | Independent entity representing uploaded files. Scoped to workspace + channel. Supports dedicated file browser, independent metadata, and lifecycle management. |
+| **MessageFile**       | Join table enabling many-to-many relationship between messages and files. Optimized with lazy loading and indexed queries to avoid N+1 joins on message lists.  |
 
 ## 9. Scaling Approach
 
