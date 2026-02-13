@@ -85,10 +85,50 @@ partitioning all data by `workspace_id`.
 -- Users (Identity Domain - Global/Hash Partitioned)
 CREATE TABLE users (
   id BIGINT PRIMARY KEY,           -- Snowflake ID
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(255),
   email VARCHAR(255) UNIQUE NOT NULL,
-  image_url VARCHAR(512),
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  email_verified BOOLEAN DEFAULT FALSE,
+  image VARCHAR(512),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Accounts (Links identity to providers)
+CREATE TABLE accounts (
+  id BIGINT PRIMARY KEY,           -- Snowflake ID
+  user_id BIGINT REFERENCES users(id),
+  account_id VARCHAR(255) NOT NULL,
+  provider_id VARCHAR(50) NOT NULL, -- e.g., 'google', 'email'
+  access_token TEXT,
+  refresh_token TEXT,
+  access_token_expires_at TIMESTAMPTZ,
+  refresh_token_expires_at TIMESTAMPTZ,
+  scope TEXT,
+  password TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Sessions (Active logins)
+CREATE TABLE sessions (
+  id BIGINT PRIMARY KEY,           -- Snowflake ID
+  user_id BIGINT REFERENCES users(id),
+  token VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  user_agent TEXT,
+  ip_address VARCHAR(45),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Verifications (Magic links/OTP)
+CREATE TABLE verifications (
+  id BIGINT PRIMARY KEY,           -- Snowflake ID
+  identifier VARCHAR(255) NOT NULL, -- email or phone
+  value VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Workspaces (Messaging Domain)

@@ -205,6 +205,9 @@ async function sendMessage(content: string) {
 | Entity                | Description                                                                                                                                                     |
 | :-------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **User**              | Global identity (ID, Email) for authentication. No persona information.                                                                                         |
+| **Account**           | Links a User to an external auth provider (OAuth or Email/Password). Stores OAuth tokens and metadata.                                                          |
+| **Session**           | Represents an active login session on a specific device/browser.                                                                                                |
+| **Verification**      | Used for email verification and magic links.                                                                                                                    |
 | **Workspace**         | Primary container for channels and members.                                                                                                                     |
 | **Channel**           | Scoped within a workspace.                                                                                                                                      |
 | **Message**           | Core unit of communication.                                                                                                                                     |

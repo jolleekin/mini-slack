@@ -68,12 +68,12 @@ The "heart" of the system - domain-specific data stores.
 All tenant data is **partitioned by `workspace_id`** to ensure isolation and enable horizontal sharding.
 For distributed consistency, all partitioned entities use **Composite Primary Keys** in the format `(workspace_id, id)`.
 
-| Store               | Purpose                                                 | Partitioning Strategy                                    |
-| ------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
-| **Identity Store**  | User credentials, sessions, **MemberedWorkspaces**      | **Partitioned by `user_id`** (Hash) + Global Email Index |
-| **Messaging DB**    | Channels, messages, files, **WorkspaceMembers**, outbox | **Partitioned by `(workspace_id, channel_id)`**          |
-| **Search Index**    | Meilisearch/OpenSearch for full-text indexing           | **Partitioned by `(workspace_id, channel_id)`**          |
-| **Subscription DB** | Plans, seats, billing (Subscription domain)             | **Partitioned by `workspace_id`**                        |
+| Store               | Purpose                                                             | Partitioning Strategy                                    |
+| ------------------- | ------------------------------------------------------------------- | -------------------------------------------------------- |
+| **Identity Store**  | Users, Accounts, Sessions, Verifications, **MemberedWorkspaces**    | **Partitioned by `user_id`** (Hash) + Global Email Index |
+| **Messaging DB**    | Workspaces, channels, messages, files, **WorkspaceMembers**, outbox | **Partitioned by `(workspace_id, channel_id)`**          |
+| **Search Index**    | Meilisearch/OpenSearch for full-text indexing                       | **Partitioned by `(workspace_id, channel_id)`**          |
+| **Subscription DB** | Plans, seats, billing (Subscription domain)                         | **Partitioned by `workspace_id`**                        |
 
 ### Tier 5: Worker Layer
 
@@ -150,7 +150,7 @@ Hybrid strategy combining performance with Zero Trust principles:
 | :-------------------- | :--------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **API Gateway**       | **Authentication & Routing** | 1. Validates **JWT** from `Authorization: Bearer` header via public JWKS endpoint<br>2. Manages **Refresh Tokens** in Redis (opaque, stored in HTTP-only cookies)<br>3. Enforces tenant-level authorization<br>4. Routes requests to internal services |
 | **Internal Services** | **Business Logic**           | 1. Domain-specific logic (Messaging, Identity)<br>2. Direct access to DB/Cache                                                                                                                                                                         |
-| **Identity Service**  | **Token & Account**          | 1. Signs **Access Tokens** (JWT) and **Refresh Tokens** (opaque, signed)<br>2. Exposes JWKS at `/.well-known/jwks.json`<br>3. Account CRUD & Profile management                                                                                        |
+| **Identity Service**  | **Token & Account**          | 1. Managed by **Better Auth** framework<br>2. Signs **Access Tokens** (JWT) and **Sessions** (Opaque)<br>3. Exposes JWKS for cross-service verification<br>4. Account CRUD & Profile management                                                        |
 
 #### Token Content Strategy
 
@@ -162,6 +162,10 @@ Hybrid strategy combining performance with Zero Trust principles:
 
 1.  **Access Token (JWT)**: Short-lived (15 min), stateless. Contains **Identity only**. Frontend keeps in memory and sends via `Authorization: Bearer` header on each API call.
 2.  **Refresh Token**: Long-lived (7 days), opaque and signed. Stored in `HttpOnly` cookies and persisted in Redis (keyed by token hash) with per-user session index for multi-session support and revocation.
+
+#### Async Communications
+
+To ensure low latency and high reliability, all non-critical side effects like **Authentication Emails** (Magic Link, Welcome) are handled asynchronously via the **Transactional Outbox**.
 
 **Multi-Session Storage (Redis):**
 

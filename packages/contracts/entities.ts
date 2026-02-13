@@ -9,7 +9,55 @@ export type SnowflakeIdString = string;
 export interface User {
   id: SnowflakeIdString;
   email: string;
+  name?: string | null;
+  emailVerified: boolean;
+  image?: string | null;
   createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Links a User to an external auth provider (OAuth or Email/Password).
+ */
+export interface Account {
+  id: SnowflakeIdString;
+  userId: SnowflakeIdString;
+  accountId: string; // The ID of the user in the external provider
+  providerId: string; // e.g., "google", "github", "email"
+  accessToken?: string | null;
+  refreshToken?: string | null;
+  accessTokenExpiresAt?: Date | null;
+  refreshTokenExpiresAt?: Date | null;
+  scope?: string | null;
+  password?: string | null; // For credential provider
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Represents an active login session.
+ */
+export interface Session {
+  id: SnowflakeIdString;
+  userId: SnowflakeIdString;
+  token: string; // The session token
+  expiresAt: Date;
+  userAgent?: string | null;
+  ipAddress?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Used for email verification and magic links.
+ */
+export interface Verification {
+  id: SnowflakeIdString;
+  identifier: string; // email or phone number
+  value: string; // The token/code
+  expiresAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Workspace {
