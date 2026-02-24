@@ -62,7 +62,7 @@ export interface BaseEvent<
   TEventType extends EventType,
   TPayload,
 > {
-  workspaceId: SnowflakeIdString;
+  partitionKey: SnowflakeIdString;
   id: SnowflakeIdString;
   aggregateType: TAggregateType;
   aggregateId: SnowflakeIdString;
