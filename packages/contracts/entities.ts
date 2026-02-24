@@ -64,6 +64,7 @@ export interface Workspace {
   id: SnowflakeIdString;
   name: string;
   slug: string;
+  logoUrl?: string | null;
   ownerId: SnowflakeIdString;
   createdAt: Date;
 }
@@ -79,20 +80,6 @@ export interface WorkspaceMember {
   userId: SnowflakeIdString;
   userName: string; // Mandatory per-workspace name.
   userImageUrl?: string | null; // Per-workspace avatar.
-  role: WorkspaceRole;
-  createdAt: Date;
-}
-
-/**
- * Workspace membership record partitioned by userId.
- * Used for user-level lookups (workspaces a user belongs to).
- */
-export interface MemberedWorkspace {
-  userId: SnowflakeIdString; // Partition Key
-  workspaceId: SnowflakeIdString;
-  workspaceName: string; // Denormalized.
-  workspaceImageUrl?: string | null; // Denormalized.
-  workspaceSlug: string; // Denormalized.
   role: WorkspaceRole;
   createdAt: Date;
 }
@@ -125,7 +112,7 @@ export interface Message {
   updatedAt?: Date | null;
 }
 
-export type FileStatus = "pending" | "in_use" | "deleted";
+export type FileStatus = "temporary" | "in_use" | "deleted";
 
 export interface File {
   workspaceId: SnowflakeIdString;

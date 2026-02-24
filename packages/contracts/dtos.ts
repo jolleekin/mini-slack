@@ -7,7 +7,6 @@ import {
   SnowflakeIdString,
   User,
   Workspace,
-  MemberedWorkspace,
   Channel,
   Message,
   File,
@@ -35,7 +34,7 @@ export interface SigninResponse {
   user: User;
   token: string;
   refreshToken: string; // For native apps.
-  workspaces: MemberedWorkspace[];
+  workspaces: Workspace[];
 }
 
 /**
