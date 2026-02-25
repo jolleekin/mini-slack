@@ -1,0 +1,13 @@
+{
+  "name": "@mini-slack/db",
+  "version": "1.0.0",
+  "description": "Shared database schema for MiniSlack",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "drizzle-orm": "latest"
+  },
+  "devDependencies": {
+    "drizzle-kit": "latest"
+  }
+}
