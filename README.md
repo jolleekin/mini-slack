@@ -1,6 +1,6 @@
 # MiniSlack
 
-A high-performance, real-time messaging platform designed for team collaboration. It provides channels, direct messaging, file sharing, and workspace management with a strong emphasis on **architectural scalability** and **multi-tenant isolation from day one**.
+Slack-like system design practice: from modular monolith to 6-tier distributed architecture. A high-performance messaging platform emphasizing architectural scalability and multi-tenant isolation from day one.
 
 ## Table of Contents
 
@@ -92,13 +92,12 @@ mini-slack/
 ├── apps/
 │   └── web/                       # Next.js monolith (Phase 1)
 │       ├── app/                   # App Router
-│       ├── lib/                   # Domain logic
-│       │   ├── identity/          # User & auth
-│       │   ├── messaging/         # Channels & messages
-│       │   ├── files/             # S3 orchestration
-│       │   ├── search/            # Search logic
-│       │   └── common/            # Shared DB, logging
-│       └── prisma/                # Schema & migrations
+│       └── lib/                   # Domain logic
+│           ├── identity/          # User & auth
+│           ├── messaging/         # Channels & messages
+│           ├── files/             # S3 orchestration
+│           ├── search/            # Search logic
+│           └── common/            # Shared DB, logging
 │
 ├── services/
 │   └── wss/                       # WebSocket Service (isolated)
@@ -112,6 +111,7 @@ mini-slack/
 │
 ├── packages/                      # Shared code
 │   ├── contracts/                 # TypeScript types & DTOs
+│   ├── db/                        # Drizzle ORM schema & migrations
 │   ├── id-gen/                    # Snowflake ID generator
 │   ├── logger/                    # Structured logging
 │   ├── errors/                    # Error types
@@ -132,7 +132,7 @@ mini-slack/
 | **Frontend**     | Next.js 16+ (React 19)                          |
 | **Backend API**  | Next.js API Routes                              |
 | **Real-time**    | Node.js + `ws` (WebSocket Service)              |
-| **Database**     | PostgreSQL + Prisma ORM                         |
+| **Database**     | PostgreSQL + Drizzle ORM                        |
 | **Cache**        | Redis                                           |
 | **Event Bus**    | Redis Streams                                   |
 | **Auth**         | JWT (Memory) + Refresh Token (HTTP-only Cookie) |

@@ -1,7 +1,7 @@
 {
   "name": "mini-slack",
   "version": "1.0.0",
-  "description": "Monorepo for MiniSlack (a simple Slack clone)",
+  "description": "Slack-like system design practice: from modular monolith to 6-tier distributed architecture. A high-performance messaging platform emphasizing architectural scalability and multi-tenant isolation from day one.",
   "workspaces": [
     "apps/*",
     "packages/*",

@@ -73,6 +73,7 @@ partitioning all data by `workspace_id`.
 │   └── file-cleanup/          # File Cleanup Worker
 ├── packages/
 │   ├── contracts/            # Shared TypeScript types
+│   ├── db/                   # Drizzle ORM schema & migrations
 │   ├── id-gen/               # Snowflake ID generator
 │   └── logger/               # Structured logging
 └── infra/

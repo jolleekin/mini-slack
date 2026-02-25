@@ -86,7 +86,7 @@ The system follows a **6-Tier Distributed Architecture** but starts as a **Modul
 - **Frontend/API**: Next.js 16+ (Monolith).
 - **Real-time**: Node.js + `ws` library (Isolated Service).
 - **Database**: PostgreSQL (Primary Store) + Redis (Cache/Streams).
-- **ORM**: Prisma.
+- **ORM**: Drizzle.
 - **File Storage**: S3-compatible object storage.
 
 ## 6. Interaction Flows & API Contract
