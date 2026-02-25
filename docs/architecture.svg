@@ -105,14 +105,14 @@
     <text x="940" y="405" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#78350F">(Partitioned)</text>
   </g>
 
-  <rect x="1145" y="345" width="150" height="80" rx="20" stroke="#7C3AED" stroke-width="2" fill="url(#workGrad)" filter="url(#shadow)" stroke-dasharray="6,3" />
+  <rect x="1145" y="345" width="150" height="80" rx="20" stroke="#7C3AED" stroke-width="2" fill="url(#workGrad)" filter="#shadow" stroke-dasharray="6,3" />
   <text x="1220" y="380" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#4C1D95">
-    <tspan x="1220" dy="0">Messaging</tspan>
-    <tspan x="1220" dy="15">Outbox Worker</tspan>
+    <tspan x="1220" dy="0">Messaging Outbox</tspan>
+    <tspan x="1220" dy="15">Worker</tspan>
   </text>
 
   <!-- ROW 3: SEARCH -->
-  <rect x="565" y="480" width="150" height="80" rx="8" stroke="#2563EB" stroke-width="2" fill="url(#svcGrad)" filter="url(#shadow)" />
+  <rect x="565" y="480" width="150" height="80" rx="8" stroke="#2563EB" stroke-width="2" fill="url(#svcGrad)" filter="#shadow" />
   <text x="640" y="525" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#1E3A8A">Search Service</text>
 
   <g filter="url(#shadow)">
@@ -147,8 +147,8 @@
 
   <rect x="1145" y="765" width="150" height="80" rx="20" stroke="#7C3AED" stroke-width="2" fill="url(#workGrad)" filter="url(#shadow)" stroke-dasharray="6,3" />
   <text x="1220" y="800" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#4C1D95">
-    <tspan x="1220" dy="0">Workspace Member</tspan>
-    <tspan x="1220" dy="15">Sync Worker</tspan>
+    <tspan x="1220" dy="0">Membership Sync</tspan>
+    <tspan x="1220" dy="15">Worker</tspan>
   </text>
 
   <!-- ROW 5: IDENTITY -->
@@ -213,8 +213,6 @@
     <line x1="1145" y1="520" x2="1015" y2="520" marker-end="url(#arrow-end)" stroke-dasharray="6,3" stroke-width="1.5" />
     <line x1="1145" y1="660" x2="1015" y2="660" marker-end="url(#arrow-end)" stroke-dasharray="6,3" stroke-width="1.5" />
 
-    <path d="M 1295 400 L 1440 400" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
-    <text x="1367" y="395" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#7C3AED" stroke="none">Update Membership</text>
     <path d="M 1295 370 L 1540 370" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
     <text x="1370" y="365" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#7C3AED" stroke="none">Publish Events</text>
     <path d="M 1295 650 L 1440 650" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
@@ -233,8 +231,10 @@
     <path d="M 715 820 Q 800 880 1440 870" stroke="#4F46E5" stroke-width="2" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" />
     <text x="860" y="880" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#4F46E5" stroke="none" transform="rotate(7,1100,880)">Read/Write Refresh Tokens</text>
 
-    <path d="M 1540 800 L 1295 800" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
-    <text x="1370" y="795" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#475569" stroke="none">Track WORKSPACE_*</text>
+    <path d="M 1295 790 L 1440 790" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
+    <text x="1367" y="785" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#7C3AED" stroke="none">Update Membership</text>
+    <path d="M 1540 820 L 1295 820" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
+    <text x="1370" y="815" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#475569" stroke="none">Track WORKSPACE_*</text>
 
     <path d="M 1145 800 L 1015 800" stroke="#4F46E5" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-end)" />
     <text x="1080" y="795" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4F46E5" stroke="none">Sync Listings</text>

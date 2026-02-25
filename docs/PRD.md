@@ -115,7 +115,7 @@ The system decouples Identity (Who you are) from Context (Where you are).
 - **Context Header**: Every API request includes `X-Workspace-ID: <wsId>` alongside the `Authorization: Bearer <token>` header.
 - **Switching**: To switch workspaces, the client simply updates the `X-Workspace-ID` header. **No re-authentication or token refresh is required.**
 - **Validation**: Services validate that `User ID` (from JWT) is a member of `Workspace ID` (from header) via a cached lookup.
-- **Membered Workspaces**: For efficient sidebar/switcher rendering, the system maintains a `MemberedWorkspaces` table partitioned by `user_id`. This allows listing a user's workspaces without cross-partition joins.
+- **Workspaces by User**: For efficient sidebar/switcher rendering in **Phase 1**, the system uses a database index on `workspace_members(user_id)`. In **later phases**, this evolves into a `workspaces_by_user` table partitioned by `user_id` in the Identity Store.
 
 ### 6.3 Real-time Messaging Flow
 
@@ -200,22 +200,27 @@ async function sendMessage(content: string) {
 
 ## 8. Domain Entities
 
-### Core Entities
+### Identity Entities
 
-| Entity                | Description                                                                                                                                                     |
-| :-------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **User**              | Global identity (ID, Email) for authentication. No persona information.                                                                                         |
-| **Account**           | Links a User to an external auth provider (OAuth or Email/Password). Stores OAuth tokens and metadata.                                                          |
-| **Session**           | Represents an active login session on a specific device/browser.                                                                                                |
-| **Verification**      | Used for email verification and magic links.                                                                                                                    |
-| **Workspace**         | Primary container for channels and members.                                                                                                                     |
-| **Channel**           | Scoped within a workspace.                                                                                                                                      |
-| **Message**           | Core unit of communication.                                                                                                                                     |
-| **WorkspaceMember**   | Join table representing User + Workspace membership. Partitioned by `workspace_id`. Tracks roles and profile (name, avatar).                                    |
-| **MemberedWorkspace** | Join table representing User + Workspace membership. Partitioned by `user_id`. Used for efficient workspace list retrieval.                                     |
-| **ChannelMember**     | Join table representing User + Channel membership. Tracks channel-specific roles and muting preferences.                                                        |
-| **File**              | Independent entity representing uploaded files. Scoped to workspace + channel. Supports dedicated file browser, independent metadata, and lifecycle management. |
-| **MessageFile**       | Join table enabling many-to-many relationship between messages and files. Optimized with lazy loading and indexed queries to avoid N+1 joins on message lists.  |
+| Entity              | Description                                                                                                                      |
+| :------------------ | :------------------------------------------------------------------------------------------------------------------------------- |
+| **User**            | Global identity (ID, Email) for authentication. No persona information.                                                          |
+| **Account**         | Links a user to an external auth provider (OAuth or Email/Password). Stores OAuth tokens and metadata.                           |
+| **Session**         | Represents an active login session on a specific device/browser.                                                                 |
+| **Verification**    | Used for email verification and magic links.                                                                                     |
+| **WorkspaceByUser** | (Long-term) Read-only model for workspace membership, partitioned by `user_id`. Used for efficient workspaces-by-user retrieval. |
+
+### Workspace Entities
+
+| Entity              | Description                                                                                                                                                     |
+| :------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Workspace**       | Primary container for channels and members.                                                                                                                     |
+| **Channel**         | Scoped within a workspace.                                                                                                                                      |
+| **Message**         | Core unit of communication.                                                                                                                                     |
+| **WorkspaceMember** | Authoritative join table representing workspace membership. Partitioned by `workspace_id`. Tracks roles and profile (name, avatar).                             |
+| **ChannelMember**   | Join table representing channel membership. Tracks channel-specific roles and muting preferences.                                                               |
+| **File**            | Independent entity representing uploaded files. Scoped to workspace + channel. Supports dedicated file browser, independent metadata, and lifecycle management. |
+| **MessageFile**     | Join table enabling many-to-many relationship between messages and files. Optimized with lazy loading and indexed queries to avoid N+1 joins on message lists.  |
 
 ## 9. Scaling Approach
 

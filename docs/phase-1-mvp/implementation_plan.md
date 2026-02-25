@@ -37,7 +37,8 @@ partitioning all data by `workspace_id`.
 | **Styling**   | [TailwindCSS 4](https://tailwindcss.com/)                               | Utility-first CSS                                  |
 | **Real-time** | [Node.js](https://nodejs.org/) + [ws](https://github.com/websockets/ws) | Live event broadcasting                            |
 | **Database**  | [PostgreSQL](https://www.postgresql.org/)                               | Primary data store                                 |
-| **ORM**       | [Prisma](https://www.prisma.io/)                                        | Type-safe database access                          |
+| **ORM**       | [Drizzle](https://orm.drizzle.team/)                                    | Type-safe Query Builder / ORM                      |
+| **DB Driver** | `postgres.js`                                                           | High-performance TCP driver (Standard Node.js)     |
 | **Cache**     | [Redis](https://redis.io/)                                              | Session cache, entitlement cache, membership cache |
 | **Event Bus** | Redis Streams                                                           | Internal async events                              |
 | **Auth**      | JWT (Memory) + Refresh Token (HTTP-only Cookie)                         | Stateful-Stateless Hybrid model                    |
@@ -61,7 +62,7 @@ partitioning all data by `workspace_id`.
 │       │   ├── search/       # Logic for full-text search
 │       │   └── common/       # DB client, core utils
 │       ├── middleware.ts     # Auth token verification and rotation logic
-│       └── prisma/           # Schema & migrations
+│       └── db/               # Schema & migrations (Drizzle)
 ├── services/
 │   └── wss/                  # Isolated WebSocket Service
 │       ├── src/
@@ -69,7 +70,7 @@ partitioning all data by `workspace_id`.
 │       │   └── redis/        # Stream consumer
 ├── workers/
 │   ├── messaging-outbox/      # Messaging Outbox Worker
-│   └── file-cleanup/          # File Cleanup Worker (orphaned uploads/deleted attachments)
+│   └── file-cleanup/          # File Cleanup Worker
 ├── packages/
 │   ├── contracts/            # Shared TypeScript types
 │   ├── id-gen/               # Snowflake ID generator
@@ -81,24 +82,23 @@ partitioning all data by `workspace_id`.
 
 ## Database Schema
 
+### Identity Domain
+
 ```sql
--- Users (Identity Domain - Global/Hash Partitioned)
 CREATE TABLE users (
-  id BIGINT PRIMARY KEY,           -- Snowflake ID
+  id BIGINT PRIMARY KEY,
   name VARCHAR(255),
   email VARCHAR(255) UNIQUE NOT NULL,
   email_verified BOOLEAN DEFAULT FALSE,
-  image VARCHAR(512),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Accounts (Links identity to providers)
 CREATE TABLE accounts (
-  id BIGINT PRIMARY KEY,           -- Snowflake ID
-  user_id BIGINT REFERENCES users(id),
-  account_id VARCHAR(255) NOT NULL,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id BIGINT NOT NULL,
   provider_id VARCHAR(50) NOT NULL, -- e.g., 'google', 'email'
+  provider_account_id VARCHAR(255) NOT NULL,
   access_token TEXT,
   refresh_token TEXT,
   access_token_expires_at TIMESTAMPTZ,
@@ -106,135 +106,189 @@ CREATE TABLE accounts (
   scope TEXT,
   password TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (user_id, id)
 );
 
--- Sessions (Active logins)
 CREATE TABLE sessions (
-  id BIGINT PRIMARY KEY,           -- Snowflake ID
-  user_id BIGINT REFERENCES users(id),
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id BIGINT NOT NULL,
   token VARCHAR(255) NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL,
   user_agent TEXT,
   ip_address VARCHAR(45),
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (user_id, id)
 );
 
--- Verifications (Magic links/OTP)
 CREATE TABLE verifications (
-  id BIGINT PRIMARY KEY,           -- Snowflake ID
-  identifier VARCHAR(255) NOT NULL, -- email or phone
+  id BIGINT PRIMARY KEY,
+  identifier VARCHAR(255) NOT NULL,
   value VARCHAR(255) NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Workspaces (Messaging Domain)
-CREATE TABLE workspaces (
-  id BIGINT PRIMARY KEY,           -- Snowflake ID
-  name VARCHAR(255) NOT NULL,
-  slug VARCHAR(255) UNIQUE NOT NULL,
-  owner_id BIGINT REFERENCES users(id),
-  created_at TIMESTAMPTZ DEFAULT NOW()
+CREATE TABLE passkeys (
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id BIGINT NOT NULL,
+  name VARCHAR(255),
+  public_key TEXT NOT NULL,
+  credential_id TEXT NOT NULL,
+  counter BIGINT NOT NULL,
+  device_type VARCHAR(50) NOT NULL,
+  backed_up BOOLEAN NOT NULL,
+  transports TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (user_id, id)
 );
 
--- Workspace Members (Messaging Domain)
-CREATE TABLE workspace_members (
-  workspace_id BIGINT REFERENCES workspaces(id),
-  user_id BIGINT REFERENCES users(id),
-  role VARCHAR(50) DEFAULT 'member',
+CREATE TABLE two_factors (
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id BIGINT NOT NULL,
+  secret TEXT NOT NULL,
+  backup_codes TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (user_id, id)
+);
+```
+
+### Messaging Domain (Workspace Partitioned)
+
+```sql
+CREATE TABLE workspaces (
+  id BIGINT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  logo_url VARCHAR(512),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE workspace_members (
+  workspace_id BIGINT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  user_id BIGINT NOT NULL,
+  role VARCHAR(50) NOT NULL DEFAULT 'member',
+  display_name VARCHAR(255),
+  avatar_url VARCHAR(512),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, user_id)
 );
 
--- Channels (Messaging Domain)
-CREATE TABLE channels (
-  workspace_id BIGINT REFERENCES workspaces(id),
-  id BIGINT,                       -- Snowflake ID
-  name VARCHAR(255) NOT NULL,
-  owner_id BIGINT REFERENCES users(id),
+CREATE TABLE workspace_invitations (
+  workspace_id BIGINT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  id BIGINT NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  role VARCHAR(50) DEFAULT 'member',
+  status VARCHAR(50) DEFAULT 'pending',
+  expires_at TIMESTAMPTZ NOT NULL,
+  inviter_id BIGINT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, id)
 );
 
--- Channel Members (Messaging Domain)
-CREATE TABLE channel_members (
-  workspace_id BIGINT,
-  channel_id BIGINT,
-  user_id BIGINT,
-  last_seen_message_id BIGINT,
-  PRIMARY KEY (workspace_id, channel_id, user_id),
-  FOREIGN KEY (workspace_id, channel_id) REFERENCES channels(workspace_id, id)
+CREATE TABLE channels (
+  workspace_id BIGINT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  id BIGINT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  owner_id BIGINT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (workspace_id, id)
 );
 
--- Messages (Messaging Domain)
+CREATE TABLE channel_members (
+  workspace_id BIGINT NOT NULL,
+  channel_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  role VARCHAR(50) NOT NULL DEFAULT 'member',
+  last_seen_message_id BIGINT,
+  PRIMARY KEY (workspace_id, channel_id, user_id),
+  CONSTRAINT fk_channel
+    FOREIGN KEY (workspace_id, channel_id)
+    REFERENCES channels(workspace_id, id) ON DELETE CASCADE
+);
+
 CREATE TABLE messages (
-  workspace_id BIGINT,
-  channel_id BIGINT,
-  id BIGINT,                       -- Snowflake ID
+  workspace_id BIGINT NOT NULL,
+  channel_id BIGINT NOT NULL,
+  id BIGINT NOT NULL,
   content TEXT NOT NULL,
-  author_id BIGINT REFERENCES users(id), -- NULL for system messages
+  author_id BIGINT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ,
   PRIMARY KEY (workspace_id, channel_id, id),
-  FOREIGN KEY (workspace_id, channel_id) REFERENCES channels(workspace_id, id)
+  CONSTRAINT fk_channel
+    FOREIGN KEY (workspace_id, channel_id)
+    REFERENCES channels(workspace_id, id) ON DELETE CASCADE
 );
 
--- Files (Messaging Domain - Workspace Scoped for isolation/billing)
+CREATE TABLE reactions (
+  workspace_id BIGINT NOT NULL,
+  channel_id BIGINT NOT NULL,
+  id BIGINT NOT NULL,
+  message_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  emoji VARCHAR(50) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (workspace_id, channel_id, id),
+  CONSTRAINT fk_message
+    FOREIGN KEY (workspace_id, channel_id, message_id)
+    REFERENCES messages(workspace_id, channel_id, id) ON DELETE CASCADE
+);
+
 CREATE TABLE files (
-  workspace_id BIGINT REFERENCES workspaces(id),
-  id BIGINT,           -- Snowflake ID
-  uploader_id BIGINT REFERENCES users(id),
+  workspace_id BIGINT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  id BIGINT NOT NULL,
+  uploader_id BIGINT,
   url VARCHAR(512) NOT NULL,
   name VARCHAR(255) NOT NULL,
   type VARCHAR(100),
   size BIGINT,
-  status VARCHAR(50) DEFAULT 'pending',
+  status VARCHAR(50) DEFAULT 'temporary',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, id)
 );
 
--- Message Files (Many-to-Many link)
 CREATE TABLE message_files (
-  workspace_id BIGINT,
-  channel_id BIGINT,
-  message_id BIGINT,
-  file_id BIGINT REFERENCES files(id),
+  workspace_id BIGINT NOT NULL,
+  channel_id BIGINT NOT NULL,
+  message_id BIGINT NOT NULL,
+  file_id BIGINT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, channel_id, message_id, file_id),
-  FOREIGN KEY (workspace_id, channel_id, message_id) REFERENCES messages(workspace_id, channel_id, id)
+  CONSTRAINT fk_file
+    FOREIGN KEY (workspace_id, file_id)
+    REFERENCES files(workspace_id, id) ON DELETE CASCADE,
+  CONSTRAINT fk_message
+    FOREIGN KEY (workspace_id, channel_id, message_id)
+    REFERENCES messages(workspace_id, channel_id, id) ON DELETE CASCADE
 );
 
--- Reactions (Messaging Domain)
-CREATE TABLE reactions (
-  workspace_id BIGINT,
-  channel_id BIGINT,
-  id BIGINT,                       -- Snowflake ID
-  message_id BIGINT,
-  user_id BIGINT REFERENCES users(id),
-  emoji VARCHAR(50) NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  PRIMARY KEY (workspace_id, channel_id, id),
-  FOREIGN KEY (workspace_id, channel_id, message_id) REFERENCES messages(workspace_id, channel_id, id)
-);
+```
 
--- Transactional Outbox
+### Infrastructure
+
+```sql
 CREATE TABLE outbox (
-  workspace_id BIGINT,              -- For partitioned consumption
-  id BIGSERIAL,
+  partition_key BIGINT NOT NULL,
+  id BIGINT NOT NULL,
   aggregate_type VARCHAR(50) NOT NULL,
   aggregate_id BIGINT NOT NULL,
   event_type VARCHAR(100) NOT NULL,
-  payload JSONB NOT NULL,
+  payload TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   published_at TIMESTAMPTZ,
-  PRIMARY KEY (workspace_id, id)
+  PRIMARY KEY (partition_key, id)
 );
+```
 
 CREATE INDEX idx_outbox_unpublished ON outbox(created_at) WHERE published_at IS NULL;
-```
+
+````
 
 ## Task Breakdown
 
@@ -257,19 +311,51 @@ CREATE INDEX idx_outbox_unpublished ON outbox(created_at) WHERE published_at IS 
   - `packages/errors`: `AppError`, `NotFoundError`, `ValidationError`
   - Note: Zod schemas live in domain modules (`lib/**/schemas.ts`)
 
-### Milestone 2: Database & Domain Logic
+- [ ] **2.1 Drizzle & Database Setup**
+  - Install Drizzle ORM and `postgres.js` driver.
+  - **Client Implementation**:
+    - Implement `lib/common/db/index.ts` using `drizzle-orm/postgres-js`.
+    - Configure for standard Node.js runtime (Vercel default).
+  - Define schema using Drizzle DSL in `lib/common/db/schema.ts` (using explicit column names for camelCase mapping).
+    > [!NOTE]
+    > **Runtime Choice**: We are using the standard Node.js runtime for the API and Server Components to maintain maximum compatibility with the `postgres.js` driver and high-performance TCP connections.
+    > [!CAUTION]
+    > **Connection Limits**: With `postgres.js`, avoid connecting directly to your database's primary port (5432) in production. Always use the **Pooled Connection String** (e.g., port 6543) provided by your host. Without this, a spike of 1,000 concurrent users will likely crash your database by exceeding the `max_connections` limit.
+  - Configure Drizzle Kit for migrations.
+  - Create initial migration.
 
-- [ ] **2.1 Prisma Setup**
-  - Install in `apps/web`
-  - Define schema with BigInt IDs
-  - Create initial migration
+#### [NEW] Better Auth Schema Mapping
+
+To ensure Better Auth understands our renamed tables/columns, the following mapping must be configured in the Better Auth initialization (Milestone 2.2):
+
+```typescript
+organization({
+  schema: {
+    organization: {
+      modelName: "workspaces",
+    },
+    member: {
+      modelName: "workspace_members",
+      fields: {
+        organizationId: "workspace_id",
+      },
+    },
+    invitation: {
+      modelName: "workspace_invitations",
+      fields: {
+        organizationId: "workspace_id",
+      },
+    },
+  },
+});
+````
 
 - [ ] **2.2 Feature Logic (Core Services)**
   - `lib/identity`: User CRUD, profile updates, session revocation logic
   - `lib/messaging`: Workspace, Channel, Message, and Reaction business logic
   - `lib/files`: Direct-to-S3 orchestration and attachment state updates
   - `lib/search`: Full-text search orchestration
-  - `lib/common`: Prisma client initialization and transaction helpers
+  - `lib/common`: Drizzle client initialization and transaction helpers
 
 - [ ] **2.3 Transactional Outbox**
   - Add outbox table to schema

@@ -64,28 +64,32 @@ Domain-specific business logic services.
 
 ### Tier 4: Persistence Layer
 
-The "heart" of the system - domain-specific data stores.
-All tenant data is **partitioned by `workspace_id`** to ensure isolation and enable horizontal sharding.
-For distributed consistency, all partitioned entities use **Composite Primary Keys** in the format `(workspace_id, id)`.
+| Store               | Purpose                                                               | Long-term Partitioning Key                |
+| ------------------- | --------------------------------------------------------------------- | ----------------------------------------- |
+| **Identity Store**  | Users, accounts, sessions, verifications                              | `user_id` (`identifier` for verification) |
+| **Messaging DB**    | Workspaces, invitations, channels, messages, files, reactions, outbox | `workspace_id`                            |
+| **Search Index**    | Meilisearch/OpenSearch for full-text indexing                         | `workspace_id`                            |
+| **Subscription DB** | Plans, seats, billing                                                 | `workspace_id`                            |
 
-| Store               | Purpose                                                             | Partitioning Strategy                                    |
-| ------------------- | ------------------------------------------------------------------- | -------------------------------------------------------- |
-| **Identity Store**  | Users, Accounts, Sessions, Verifications, **MemberedWorkspaces**    | **Partitioned by `user_id`** (Hash) + Global Email Index |
-| **Messaging DB**    | Workspaces, channels, messages, files, **WorkspaceMembers**, outbox | **Partitioned by `(workspace_id, channel_id)`**          |
-| **Search Index**    | Meilisearch/OpenSearch for full-text indexing                       | **Partitioned by `(workspace_id, channel_id)`**          |
-| **Subscription DB** | Plans, seats, billing (Subscription domain)                         | **Partitioned by `workspace_id`**                        |
+To ensure efficient lookups, there are global indexes for
+
+- `email -> user_id`
+- `(provider_id, provider_account_id) -> user_id`
+- `slug -> workspace_id`
+
+`session` and `verifications` may be stored in a Key-Value store like Redis for quick lookups.
 
 ### Tier 5: Worker Layer
 
 Background processing and async tasks.
 
-| Worker                      | Responsibility                                                               |
-| --------------------------- | ---------------------------------------------------------------------------- |
-| **Messaging Outbox Worker** | Polls transactional outbox, updates membership cache, publishes to event bus |
-| **Indexer Worker**          | Indexes new content for search                                               |
-| **File Cleanup Worker**     | Cleans up orphaned uploads and deleted attachments                           |
-| **Subscription Worker**     | Tracks usage, updates entitlements                                           |
-| **Membership Sync Worker**  | Syncs workspace listings between stores                                      |
+| Worker                      | Responsibility                                                                                            |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Messaging Outbox Worker** | Polls transactional outbox and publishes events to the event bus                                          |
+| **Indexer Worker**          | Indexes new content for search                                                                            |
+| **File Cleanup Worker**     | Cleans up orphaned uploads and deleted attachments                                                        |
+| **Subscription Worker**     | Tracks usage, updates entitlements                                                                        |
+| **Membership Sync Worker**  | Consumes events to update the membership cache (workspace & channel) and sync workspaces-by-user listings |
 
 ### Tier 6: Shared Infrastructure (Real-time Backbone)
 
@@ -120,8 +124,8 @@ Guarantees event propagation for high-velocity data (Messages) even if the messa
 flowchart LR
     S["Messaging Service"] --> O["Outbox Table"]
     O --> W["Messaging Outbox Worker"]
-    W --> C["Cache"]
     W --> E["Event Bus"]
+    E --> C["Consumers"]
 ```
 
 ### 3. Entitlement-First Design
@@ -129,7 +133,6 @@ flowchart LR
 Real-time permission checks via high-speed cache:
 
 - Membership cached in Redis with TTL
-- Permission checks under 1ms
 - Cache updates on membership changes
 
 ### 4. Fan-out Pattern
@@ -191,25 +194,28 @@ MiniSlack avoids global user profiles. Personas (name, avatar) are strictly scop
 - **Updates**: Updating a profile in one workspace has zero impact on other workspaces.
 - **Internal Denormalization**: For extreme performance, the `Messaging Service` may fan-out profile updates to `ChannelMember` (and/or `Message`) records within the same workspace.
 
-### 7. Double-Sided Membership Sync
+### 7. Double-Sided Workspace Membership Sync
 
-To support O(1) workspace list retrieval and O(1) members-of-workspace retrieval, membership data is stored twice:
+To support O(1) lookups for both "Who is in this workspace?" and "What workspaces am I in?", membership data is optimized for two different lookup patterns:
 
-1.  **`MemberedWorkspaces`** (User-Partitioned): Stored in Identity Store. Used for "What workspaces am I in?"
-2.  **`WorkspaceMembers`** (Workspace-Partitioned): Stored in Messaging Store. Used for "Who is in this workspace?"
+1.  **"Who is in this workspace?"** (Lookup by `workspace_id`)
+    - **All Stages**: `workspace_members` table (authoritative, workspace-partitioned) in Messaging Store.
+2.  **"What workspaces am I in?"** (Lookup by `user_id`)
+    - **Phase 1**: Database index on `workspace_members(user_id)`.
+    - **Long-term**: `workspaces_by_user` table (read-only, user-partitioned) in Identity Store.
 
 #### Synchronization Orchestration
 
-A **WorkspaceMembership Sync Worker** orchestrates consistency using the Event Bus:
+A **Membership Sync Worker** orchestrates consistency in the sharded state using the Event Bus:
 
 - **User Joins/Leaves Workspace**:
-  1. `Messaging Service` writes to (or deletes from) `WorkspaceMembers` table.
+  1. `Messaging Service` writes to `WorkspaceMembers`.
   2. `Messaging Service` publishes `WORKSPACE_MEMBER_ADDED` or `WORKSPACE_MEMBER_REMOVED` event.
-  3. `Sync Worker` consumes event and updates `MemberedWorkspaces` table in Identity Store.
-- **Workspace Name/Icon Update**:
+  3. `Sync Worker` consumes event and updates the user-centric record (e.g., `workspaces_by_user`) and membership cache.
+- **Workspace Name/Logo Update**:
   1. `Messaging Service` updates `Workspace` table.
   2. `Messaging Service` publishes `WORKSPACE_UPDATED` event.
-  3. `Sync Worker` performs a **Fan-out** update to all affected rows in `MemberedWorkspaces` (Identity Store).
+  3. `Sync Worker` performs a **Fan-out** update to all affected user-centric records.
 
 ### 8. File Handling & Storage
 

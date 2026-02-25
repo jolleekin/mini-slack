@@ -208,6 +208,52 @@ Each pattern has a **trigger condition** and a **decomposition strategy**.
 
 - Services are isolated; one service's pool exhaustion doesn't affect others
 
+## Database Scaling Strategy
+
+MiniSlack uses an evidence-based approach to database architecture, starting with a robust monolith and evolving toward a sharded, multi-domain system.
+
+### Phase 1 (Short-term): The Resilient Monolith
+
+In Phase 1, all data resides in a single PostgreSQL instance. We prioritize simplicity while maintaining paths for future sharding.
+
+- **Storage**: All tables in the same DB instance.
+- **Outbox**: A **Single Transactional Outbox** for all domain events.
+  - To support future scale, we include a `partition_key` (derived from `user_id`, `workspace_id` or `channel_id`) in every outbox record.
+- **Identity Retrieval**: O(1) sidebar "My Workspaces" retrieval is achieved via a dedicated database index: `workspace_members(user_id)`.
+- **Global Constraints**: Enforced via standard unique indexes (e.g., `users(email)`, `workspaces(slug)`).
+
+### Long-term: Sharded & Partitioned Store
+
+When metrics (CPU, connection limits, I/O) justify separation, the system evolves into sharded domains.
+
+#### **Identity Domain**
+
+- `users`, `accounts`, `sessions`: Shard by `user_id`.
+- `verifications`: Shard by `identifier`.
+- **Global Indexes**:
+  - `email -> user_id`
+  - `(provider_id, provider_account_id) -> user_id`
+  - `slug -> workspace_id`
+
+#### **Messaging Domain**
+
+- `workspaces`, `channels`, `messages`, `reactions`, `files`, `messaging_outbox`: Shard by `workspace_id`.
+- `workspace_members`, `invitations`: Shard by `workspace_id`.
+
+#### Infrastructure
+
+1. **Outbox Splitting and Partitioning**: table `outbox` is split by domain, and each domain-specific table is partitioned by `partition_key`.
+2. **Worker Parallelism**: Run multiple instances of the **Messaging Outbox Worker**, each responsible for a specific subset of partitions. This eliminates the "single tail" bottleneck while maintaining ordering guarantees per partition.
+3. **Hot Channel Mitigation**: Extremely active channels or workspaces can be assigned dedicated outbox partitions to prevent them from lagging others.
+
+#### **Double-Sided Sync**
+
+To maintain O(1) workspaces-by-user retrieval, we introduce table `workspaces_by_user` to the Identity Store.
+
+- Partitioned by `user_id`.
+- Replicates workspace name/logo.
+- Synchronized via workspace events consumed by the **Membership Sync Worker**.
+
 ## Decision Criteria for Decomposition
 
 Before extracting a service, ensure all of the following are true:
