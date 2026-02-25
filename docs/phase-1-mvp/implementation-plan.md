@@ -12,7 +12,7 @@ Next.js application, with dedicated workers for the messaging outbox and file cl
 The system is designed with **Multi-Tenant Isolation** from day one, logically
 partitioning all data by `workspace_id`.
 
-![Phase 1 Architecture](./phase-1-architecture.svg)
+![Phase 1 Architecture](./architecture.svg)
 
 ## Table of Contents
 

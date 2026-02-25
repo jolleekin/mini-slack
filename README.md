@@ -33,7 +33,7 @@ This is what the system becomes at 10M+ DAU - shows how services, persistence, w
 
 The foundation (<= 100K DAU) - a single Next.js application with isolated WebSocket service and workers.
 
-![Phase 1 Architecture](./docs/phase-1-mvp/phase-1-architecture.svg)
+![Phase 1 Architecture](./docs/phase-1-mvp/architecture.svg)
 
 **Path Forward**: After Phase 1 launches, metrics are monitored and services decomposed only when bottlenecks emerge. See [Scaling Strategy](./docs/scaling-strategy.md) for how decomposition decisions are made.
 
@@ -45,7 +45,7 @@ For detailed architecture explanation, see [Architecture Overview](./docs/archit
 | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | **[Product Requirements (PRD)](./docs/PRD.md)**                                   | Features, scope, and capacity estimates                                  |
 | **[Architecture Overview](./docs/architecture.md)**                               | The 6-tier North Star and design principles                              |
-| **[Phase 1: MVP Implementation Plan](./docs/phase-1-mvp/implementation_plan.md)** | How to build the monolith (tech stack, database schema, milestones)      |
+| **[Phase 1: MVP Implementation Plan](./docs/phase-1-mvp/implementation-plan.md)** | How to build the monolith (tech stack, database schema, milestones)      |
 | **[Scaling Strategy](./docs/scaling-strategy.md)**                                | Evidence-based evolution: bottleneck patterns and decomposition criteria |
 
 ## Getting Started
@@ -86,8 +86,8 @@ mini-slack/
 │   ├── scaling-strategy.md        # Evidence-based evolution
 │   ├── architecture.svg           # Architecture diagram
 │   └── phase-1-mvp/
-│       ├── implementation_plan.md # Phase 1 plan
-│       └── phase-1-architecture.svg
+│       ├── implementation-plan.md
+│       └── architecture.svg
 │
 ├── apps/
 │   └── web/                       # Next.js monolith (Phase 1)

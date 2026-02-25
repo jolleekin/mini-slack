@@ -7,7 +7,7 @@ This document describes the **target-state architecture** for MiniSlack at full 
 >
 > The **actual path to scale is evidence-based, not predetermined**:
 >
-> 1. Phase 1 launches a modular monolith with strong observability (see [Phase 1 Implementation Plan](./phase-1-mvp/implementation_plan.md))
+> 1. Phase 1 launches a modular monolith with strong observability (see [Phase 1 Implementation Plan](./phase-1-mvp/implementation-plan.md))
 > 2. As the system grows, we monitor for bottlenecks
 > 3. When a bottleneck emerges, we decompose only that service (see [Scaling Strategy](./scaling-strategy.md))
 >
@@ -265,5 +265,5 @@ graph LR
 ## Related Documents
 
 - [Product Requirements](./PRD.md)
-- [Phase 1 Implementation](./phase-1-mvp/implementation_plan.md)
+- [Phase 1 Implementation](./phase-1-mvp/implementation-plan.md)
 - [Scaling Strategy](./scaling-strategy.md)

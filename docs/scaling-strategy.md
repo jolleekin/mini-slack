@@ -288,5 +288,5 @@ Before extracting a service, ensure all of the following are true:
 ## Related Documents
 
 - [Architecture Overview](./architecture.md) - 6-Tier target architecture (North Star)
-- [Phase 1 Implementation Plan](./phase-1-mvp/implementation_plan.md) - How to build the monolith with observability
+- [Phase 1 Implementation Plan](./phase-1-mvp/implementation-plan.md) - How to build the monolith with observability
 - [PRD](./PRD.md) - Product requirements
