@@ -61,8 +61,7 @@ partitioning all data by `workspace_id`.
 │       │   ├── files/        # S3 orchestration
 │       │   ├── search/       # Logic for full-text search
 │       │   └── common/       # DB client, core utils
-│       ├── middleware.ts     # Auth token verification and rotation logic
-│       └── db/               # Schema & migrations (Drizzle)
+│       └── middleware.ts     # Auth token verification and rotation logic
 ├── services/
 │   └── wss/                  # Isolated WebSocket Service
 │       ├── src/
@@ -268,7 +267,6 @@ CREATE TABLE message_files (
     FOREIGN KEY (workspace_id, channel_id, message_id)
     REFERENCES messages(workspace_id, channel_id, id) ON DELETE CASCADE
 );
-
 ```
 
 ### Infrastructure
@@ -285,11 +283,9 @@ CREATE TABLE outbox (
   published_at TIMESTAMPTZ,
   PRIMARY KEY (partition_key, id)
 );
-```
 
 CREATE INDEX idx_outbox_unpublished ON outbox(created_at) WHERE published_at IS NULL;
-
-````
+```
 
 ## Task Breakdown
 
@@ -307,23 +303,27 @@ CREATE INDEX idx_outbox_unpublished ON outbox(created_at) WHERE published_at IS 
   - Export `generateId()` function
 
 - [x] **1.3 Shared Packages**
+  - `packages/db`: Drizzle ORM schema & migrations
   - `packages/contracts`: Shared TypeScript types & DTOs (types only, no validation)
   - `packages/logger`: Pino-based structured logging
   - `packages/errors`: `AppError`, `NotFoundError`, `ValidationError`
   - Note: Zod schemas live in domain modules (`lib/**/schemas.ts`)
 
 - [ ] **2.1 Drizzle & Database Setup**
-  - Install Drizzle ORM and `postgres.js` driver.
-  - **Client Implementation**:
+  - Configure `packages/db`:
+    - Define schema using Drizzle DSL in `packages/db/schema/` (using explicit column names for camelCase mapping).
+    - Configure Drizzle Kit for migrations in `packages/db/drizzle.config.ts`.
+    - Create initial migration.
+  - **Client Implementation** in `apps/web`:
+    - Install `drizzle-orm` and `postgres.js` driver.
     - Implement `lib/common/db/index.ts` using `drizzle-orm/postgres-js`.
+    - Import schema from `packages/db`.
     - Configure for standard Node.js runtime (Vercel default).
-  - Define schema using Drizzle DSL in `lib/common/db/schema.ts` (using explicit column names for camelCase mapping).
-    > [!NOTE]
-    > **Runtime Choice**: We are using the standard Node.js runtime for the API and Server Components to maintain maximum compatibility with the `postgres.js` driver and high-performance TCP connections.
-    > [!CAUTION]
-    > **Connection Limits**: With `postgres.js`, avoid connecting directly to your database's primary port (5432) in production. Always use the **Pooled Connection String** (e.g., port 6543) provided by your host. Without this, a spike of 1,000 concurrent users will likely crash your database by exceeding the `max_connections` limit.
-  - Configure Drizzle Kit for migrations.
-  - Create initial migration.
+      > [!NOTE]
+      > **Runtime Choice**: We are using the standard Node.js runtime for the API and Server Components to maintain maximum compatibility with the `postgres.js` driver and high-performance TCP connections.
+      >
+      > [!CAUTION]
+      > **Connection Limits**: With `postgres.js`, avoid connecting directly to your database's primary port (5432) in production. Always use the **Pooled Connection String** (e.g., port 6543) provided by your host. Without this, a spike of 1,000 concurrent users will likely crash your database by exceeding the `max_connections` limit.
 
 #### [NEW] Better Auth Schema Mapping
 
@@ -349,7 +349,7 @@ organization({
     },
   },
 });
-````
+```
 
 - [ ] **2.2 Feature Logic (Core Services)**
   - `lib/identity`: User CRUD, profile updates, session revocation logic
