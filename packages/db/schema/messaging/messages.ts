@@ -25,6 +25,7 @@ export const messages = pgTable(
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.channelId, t.id] }),
     foreignKey({
+      name: "messages_workspace_id_channel_id_fk",
       columns: [t.workspaceId, t.channelId],
       foreignColumns: [channels.workspaceId, channels.id],
     }).onDelete("cascade"),
@@ -45,6 +46,7 @@ export const reactions = pgTable(
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.channelId, t.id] }),
     foreignKey({
+      name: "reactions_workspace_id_channel_id_message_id_fk",
       columns: [t.workspaceId, t.channelId, t.messageId],
       foreignColumns: [messages.workspaceId, messages.channelId, messages.id],
     }).onDelete("cascade"),

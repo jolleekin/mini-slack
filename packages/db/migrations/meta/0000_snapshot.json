@@ -1,5 +1,5 @@
 {
-  "id": "6e20fa3f-c759-4784-9439-cd36fe19e494",
+  "id": "1edaae19-8f90-4980-99ae-9f81e573ac89",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -630,8 +630,8 @@
         }
       },
       "foreignKeys": {
-        "channel_members_workspace_id_channel_id_channels_workspace_id_id_fk": {
-          "name": "channel_members_workspace_id_channel_id_channels_workspace_id_id_fk",
+        "channel_members_workspace_id_channel_id_fk": {
+          "name": "channel_members_workspace_id_channel_id_fk",
           "tableFrom": "channel_members",
           "tableTo": "channels",
           "columnsFrom": [
@@ -777,8 +777,8 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "messages_workspace_id_channel_id_channels_workspace_id_id_fk": {
-          "name": "messages_workspace_id_channel_id_channels_workspace_id_id_fk",
+        "messages_workspace_id_channel_id_fk": {
+          "name": "messages_workspace_id_channel_id_fk",
           "tableFrom": "messages",
           "tableTo": "channels",
           "columnsFrom": [
@@ -886,8 +886,8 @@
         }
       },
       "foreignKeys": {
-        "reactions_workspace_id_channel_id_message_id_messages_workspace_id_channel_id_id_fk": {
-          "name": "reactions_workspace_id_channel_id_message_id_messages_workspace_id_channel_id_id_fk",
+        "reactions_workspace_id_channel_id_message_id_fk": {
+          "name": "reactions_workspace_id_channel_id_message_id_fk",
           "tableFrom": "reactions",
           "tableTo": "messages",
           "columnsFrom": [
@@ -1093,8 +1093,8 @@
         }
       },
       "foreignKeys": {
-        "message_files_workspace_id_file_id_files_workspace_id_id_fk": {
-          "name": "message_files_workspace_id_file_id_files_workspace_id_id_fk",
+        "message_files_workspace_id_file_id_fk": {
+          "name": "message_files_workspace_id_file_id_fk",
           "tableFrom": "message_files",
           "tableTo": "files",
           "columnsFrom": [
@@ -1108,8 +1108,8 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "message_files_workspace_id_channel_id_message_id_messages_workspace_id_channel_id_id_fk": {
-          "name": "message_files_workspace_id_channel_id_message_id_messages_workspace_id_channel_id_id_fk",
+        "message_files_workspace_id_channel_id_message_id_fk": {
+          "name": "message_files_workspace_id_channel_id_message_id_fk",
           "tableFrom": "message_files",
           "tableTo": "messages",
           "columnsFrom": [

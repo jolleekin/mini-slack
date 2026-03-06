@@ -37,6 +37,7 @@ export const channelMembers = pgTable(
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.channelId, t.userId] }),
     foreignKey({
+      name: "channel_members_workspace_id_channel_id_fk",
       columns: [t.workspaceId, t.channelId],
       foreignColumns: [channels.workspaceId, channels.id],
     }).onDelete("cascade"),

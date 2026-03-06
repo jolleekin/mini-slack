@@ -47,10 +47,12 @@ export const messageFiles = pgTable(
       columns: [t.workspaceId, t.channelId, t.messageId, t.fileId],
     }),
     foreignKey({
+      name: "message_files_workspace_id_file_id_fk",
       columns: [t.workspaceId, t.fileId],
       foreignColumns: [files.workspaceId, files.id],
     }).onDelete("cascade"),
     foreignKey({
+      name: "message_files_workspace_id_channel_id_message_id_fk",
       columns: [t.workspaceId, t.channelId, t.messageId],
       foreignColumns: [messages.workspaceId, messages.channelId, messages.id],
     }).onDelete("cascade"),
