@@ -5,13 +5,14 @@
   "type": "module",
   "main": "index.ts",
   "scripts": {
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:generate": "dotenv -e ../../.env -- drizzle-kit generate",
+    "db:migrate": "dotenv -e ../../.env -- drizzle-kit migrate"
   },
   "dependencies": {
-    "drizzle-orm": "latest"
+    "drizzle-orm": "^0.45.1"
   },
   "devDependencies": {
-    "drizzle-kit": "latest"
+    "dotenv-cli": "^11.0.0",
+    "drizzle-kit": "^0.31.9"
   }
 }
