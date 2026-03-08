@@ -309,7 +309,7 @@ CREATE INDEX idx_outbox_unpublished ON outbox(created_at) WHERE published_at IS 
   - `packages/errors`: `AppError`, `NotFoundError`, `ValidationError`
   - Note: Zod schemas live in domain modules (`lib/**/schemas.ts`)
 
-- [ ] **2.1 Drizzle & Database Setup**
+- [x] **2.1 Drizzle & Database Setup**
   - Configure `packages/db`:
     - Define schema using Drizzle DSL in `packages/db/schema/` (using explicit column names for camelCase mapping).
     - Configure Drizzle Kit for migrations in `packages/db/drizzle.config.ts`.
