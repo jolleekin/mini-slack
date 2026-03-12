@@ -1,12 +1,13 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+
 import {
-  generateId,
-  parseId,
-  idToString,
-  stringToId,
-  initGenerator,
-  SnowflakeGenerator,
   CUSTOM_EPOCH,
+  SnowflakeGenerator,
+  generateId,
+  idToString,
+  initGenerator,
+  parseId,
+  stringToId,
 } from "./index";
 
 describe("Snowflake ID Generator", () => {

@@ -3,5 +3,22 @@
   "singleQuote": false,
   "tabWidth": 2,
   "trailingComma": "all",
-  "printWidth": 80
+  "printWidth": 80,
+
+  "importOrder": ["^@/.*$", "^\\.\\./.*$", "^\\./.*$"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+
+  "overrides": [
+    {
+      "files": "apps/**/*.{ts,tsx}",
+      "options": {
+        "plugins": [
+          "@trivago/prettier-plugin-sort-imports",
+          "prettier-plugin-tailwindcss"
+        ]
+      }
+    }
+  ]
 }

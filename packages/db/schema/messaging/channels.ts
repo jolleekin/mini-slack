@@ -1,9 +1,9 @@
 import {
+  bigint,
   foreignKey,
   index,
-  bigint,
-  primaryKey,
   pgTable,
+  primaryKey,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";

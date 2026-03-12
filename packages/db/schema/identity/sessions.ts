@@ -1,11 +1,11 @@
 import {
-  index,
   bigint,
-  primaryKey,
+  index,
   pgTable,
+  primaryKey,
+  text,
   timestamp,
   varchar,
-  text,
 } from "drizzle-orm/pg-core";
 
 import { users } from "./users.ts";

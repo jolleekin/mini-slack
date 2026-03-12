@@ -1,12 +1,12 @@
 import {
-  pgTable,
   bigint,
-  varchar,
-  timestamp,
-  text,
-  index,
-  primaryKey,
   foreignKey,
+  index,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 import { channels } from "./channels.ts";

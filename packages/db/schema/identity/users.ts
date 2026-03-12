@@ -1,10 +1,10 @@
 import {
-  pgTable,
   bigint,
-  varchar,
   boolean,
-  timestamp,
   index,
+  pgTable,
+  timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable(

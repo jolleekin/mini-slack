@@ -1,13 +1,13 @@
-import {
-  pgTable,
-  bigint,
-  varchar,
-  timestamp,
-  text,
-  index,
-  primaryKey,
-} from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import {
+  bigint,
+  index,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const outbox = pgTable(
   "outbox",

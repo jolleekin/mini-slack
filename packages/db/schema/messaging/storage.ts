@@ -1,11 +1,11 @@
 import {
-  pgTable,
   bigint,
-  varchar,
-  timestamp,
-  index,
-  primaryKey,
   foreignKey,
+  index,
+  pgTable,
+  primaryKey,
+  timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 import { fileStatusEnum } from "./enums.ts";

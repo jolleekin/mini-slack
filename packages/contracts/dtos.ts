@@ -2,15 +2,14 @@
  * Data Transfer Objects for API requests and responses.
  * These are types-only and do not include validation (handled by Zod in apps).
  */
-
 import {
+  Channel,
+  File,
+  Message,
+  Reaction,
   SnowflakeIdString,
   User,
   Workspace,
-  Channel,
-  Message,
-  File,
-  Reaction,
 } from "./entities.ts";
 
 // --- Auth DTOs ---

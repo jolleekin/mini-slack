@@ -1,13 +1,13 @@
 import {
+  Channel,
+  ChannelMember,
+  File,
+  Message,
+  Reaction,
   SnowflakeIdString,
   User,
   Workspace,
   WorkspaceMember,
-  Channel,
-  ChannelMember,
-  Message,
-  Reaction,
-  File,
 } from "./entities.ts";
 
 /**

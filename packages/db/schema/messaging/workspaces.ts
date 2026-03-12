@@ -1,13 +1,13 @@
 import {
-  pgTable,
   bigint,
-  varchar,
-  timestamp,
   index,
+  pgTable,
   primaryKey,
+  timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
 
-import { memberRoleEnum, invitationStatusEnum } from "./enums.ts";
+import { invitationStatusEnum, memberRoleEnum } from "./enums.ts";
 
 export const workspaces = pgTable(
   "workspaces",
