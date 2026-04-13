@@ -1,38 +1,54 @@
 import {
-  bigint,
   foreignKey,
   index,
   pgTable,
   primaryKey,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
 
-import { memberRoleEnum } from "./enums.ts";
+import { idType } from "../types.ts";
+
+import { channelTypeEnum, memberRoleEnum } from "./enums.ts";
 import { workspaces } from "./workspaces.ts";
 
 export const channels = pgTable(
   "channels",
   {
-    workspaceId: bigint("workspace_id", { mode: "bigint" })
+    workspaceId: idType("workspace_id")
       .references(() => workspaces.id, { onDelete: "cascade" })
       .notNull(),
-    id: bigint("id", { mode: "bigint" }).notNull(),
+    id: idType("id").notNull(),
     name: varchar("name", { length: 255 }).notNull(),
-    ownerId: bigint("owner_id", { mode: "bigint" }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    type: channelTypeEnum("type").notNull().default("public"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
-  (t) => [primaryKey({ columns: [t.workspaceId, t.id] })],
+  (t) => [
+    primaryKey({ columns: [t.workspaceId, t.id] }),
+    uniqueIndex("channels_workspace_id_name_idx").on(t.workspaceId, t.name),
+  ],
 );
 
 export const channelMembers = pgTable(
   "channel_members",
   {
-    workspaceId: bigint("workspace_id", { mode: "bigint" }).notNull(),
-    channelId: bigint("channel_id", { mode: "bigint" }).notNull(),
-    userId: bigint("user_id", { mode: "bigint" }).notNull(),
+    workspaceId: idType("workspace_id").notNull(),
+    channelId: idType("channel_id").notNull(),
+    userId: idType("user_id").notNull(),
     role: memberRoleEnum("role").notNull().default("member"),
-    lastSeenMessageId: bigint("last_seen_message_id", { mode: "bigint" }),
+    lastSeenMessageId: idType("last_seen_message_id"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.channelId, t.userId] }),

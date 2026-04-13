@@ -1,5 +1,4 @@
 import {
-  bigint,
   foreignKey,
   index,
   pgTable,
@@ -9,18 +8,24 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { idType } from "../types.ts";
+
 import { channels } from "./channels.ts";
 
 export const messages = pgTable(
   "messages",
   {
-    workspaceId: bigint("workspace_id", { mode: "bigint" }).notNull(),
-    channelId: bigint("channel_id", { mode: "bigint" }).notNull(),
-    id: bigint("id", { mode: "bigint" }).notNull(),
+    workspaceId: idType("workspace_id").notNull(),
+    channelId: idType("channel_id").notNull(),
+    id: idType("id").notNull(),
     content: text("content").notNull(),
-    authorId: bigint("author_id", { mode: "bigint" }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }),
+    authorId: idType("author_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.channelId, t.id] }),
@@ -35,13 +40,15 @@ export const messages = pgTable(
 export const reactions = pgTable(
   "reactions",
   {
-    workspaceId: bigint("workspace_id", { mode: "bigint" }).notNull(),
-    channelId: bigint("channel_id", { mode: "bigint" }).notNull(),
-    id: bigint("id", { mode: "bigint" }).notNull(),
-    messageId: bigint("message_id", { mode: "bigint" }).notNull(),
-    userId: bigint("user_id", { mode: "bigint" }).notNull(),
+    workspaceId: idType("workspace_id").notNull(),
+    channelId: idType("channel_id").notNull(),
+    id: idType("id").notNull(),
+    messageId: idType("message_id").notNull(),
+    userId: idType("user_id").notNull(),
     emoji: varchar("emoji", { length: 50 }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.channelId, t.id] }),

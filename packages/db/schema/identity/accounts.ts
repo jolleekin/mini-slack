@@ -1,22 +1,23 @@
 import {
-  bigint,
-  index,
   pgTable,
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
+
+import { idType } from "../types.ts";
 
 import { users } from "./users.ts";
 
 export const accounts = pgTable(
   "accounts",
   {
-    userId: bigint("user_id", { mode: "bigint" })
+    userId: idType("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
-    id: bigint("id", { mode: "bigint" }).notNull(),
+    id: idType("id").notNull(),
     providerId: varchar("provider_id", { length: 50 }).notNull(),
     providerAccountId: varchar("provider_account_id", {
       length: 255,
@@ -31,11 +32,19 @@ export const accounts = pgTable(
     }),
     scope: text("scope"),
     password: text("password"), // used when providerId is "credentials".
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     primaryKey({ columns: [t.userId, t.id] }),
-    index("provider_id_acount_id_idx").on(t.providerId, t.providerAccountId),
+    uniqueIndex("provider_id_acount_id_idx").on(
+      t.providerId,
+      t.providerAccountId,
+    ),
   ],
 );
+type X = typeof accounts.$inferSelect;

@@ -173,7 +173,7 @@ CREATE TABLE "outbox" (
 	"aggregate_type" varchar(50) NOT NULL,
 	"aggregate_id" bigint NOT NULL,
 	"event_type" varchar(100) NOT NULL,
-	"payload" text NOT NULL,
+	"payload" jsonb NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now(),
 	"published_at" timestamp with time zone,
 	CONSTRAINT "outbox_partition_key_id_pk" PRIMARY KEY("partition_key","id")

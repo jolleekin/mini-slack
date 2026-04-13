@@ -1,5 +1,4 @@
 import {
-  bigint,
   index,
   pgTable,
   primaryKey,
@@ -7,17 +6,23 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { idType } from "../types.ts";
+
 import { invitationStatusEnum, memberRoleEnum } from "./enums.ts";
 
 export const workspaces = pgTable(
   "workspaces",
   {
-    id: bigint("id", { mode: "bigint" }).primaryKey(),
+    id: idType("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).unique().notNull(),
     logoUrl: varchar("logo_url", { length: 512 }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [index("workspaces_slug_idx").on(t.slug)],
 );
@@ -25,15 +30,19 @@ export const workspaces = pgTable(
 export const workspaceMembers = pgTable(
   "workspace_members",
   {
-    workspaceId: bigint("workspace_id", { mode: "bigint" })
+    workspaceId: idType("workspace_id")
       .references(() => workspaces.id, { onDelete: "cascade" })
       .notNull(),
-    userId: bigint("user_id", { mode: "bigint" }).notNull(),
+    userId: idType("user_id").notNull(),
     role: memberRoleEnum("role").notNull().default("member"),
-    displayName: varchar("display_name", { length: 255 }),
+    name: varchar("name", { length: 255 }),
     avatarUrl: varchar("avatar_url", { length: 512 }),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.userId] }),
@@ -44,16 +53,18 @@ export const workspaceMembers = pgTable(
 export const workspaceInvitations = pgTable(
   "workspace_invitations",
   {
-    workspaceId: bigint("workspace_id", { mode: "bigint" })
+    workspaceId: idType("workspace_id")
       .references(() => workspaces.id, { onDelete: "cascade" })
       .notNull(),
-    id: bigint("id", { mode: "bigint" }).notNull(),
+    id: idType("id").notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     role: memberRoleEnum("role").default("member"),
     status: invitationStatusEnum("status").default("pending"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    inviterId: bigint("inviter_id", { mode: "bigint" }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    inviterId: idType("inviter_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.id] }),
