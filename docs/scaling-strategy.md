@@ -216,15 +216,45 @@ MiniSlack uses an evidence-based approach to database architecture, starting wit
 
 In Phase 1, all data resides in a single PostgreSQL instance. We prioritize simplicity while maintaining paths for future sharding.
 
-- **Storage**: All tables in the same DB instance.
-- **Outbox**: A **Single Transactional Outbox** for all domain events.
-  - To support future scale, we include a `partition_key` (derived from `user_id`, `workspace_id` or `channel_id`) in every outbox record.
-- **Identity Retrieval**: O(1) sidebar "My Workspaces" retrieval is achieved via a dedicated database index: `workspace_members(user_id)`.
-- **Global Constraints**: Enforced via standard unique indexes (e.g., `users(email)`, `workspaces(slug)`).
+#### Storage
+
+All tables in the same DB instance.
+
+#### Outbox
+
+A Single Transactional Outbox for all domain events. To support future scale, we include a `partition_key` (derived from `user_id`, `workspace_id` or `channel_id`) in every outbox record.
+
+#### Identity Retrieval
+
+O(1) sidebar "My Workspaces" retrieval is achieved via a dedicated database index: `workspace_members(user_id)`.
+
+#### Global Constraints
+
+Enforced via standard unique indexes (e.g., `users(email)`, `workspaces(slug)`).
+
+#### Distributed ID Generation & Identity
+
+To ensure uniqueness and performance in serverless environments (like Vercel), we use a hybrid strategy.
+
+##### Messages (Ordering & Identity)
+
+Uses a Composite Primary Key `(workspace_id, channel_id, id)`. The `id` is a Sequential Snowflake (41-bit timestamp + 22-bit counter) generated via `generateSequentialId()`. This provides strict monotonicity within each channel and natural time-based ordering. We also use a native `created_at` timestamp for display and grouping.
+
+##### Outbox (Strict Ordering)
+
+Uses a Composite Primary Key `(partition_key, id)`. The `id` is a Sequential Snowflake (41-bit timestamp + 22-bit counter) generated via `generateSequentialId()`. This ensures that even across multiple lambdas, events within the same partition are strictly ordered.
+
+##### Other Entities (Opaque IDs)
+
+Workspaces, channels, and users use a Random-based Snowflake (41-bit timestamp + 22 bits of randomness). This provides unique 64-bit BigInt IDs without requiring database state, sufficient for low-frequency creation events.
 
 ### Long-term: Sharded & Partitioned Store
 
 When metrics (CPU, connection limits, I/O) justify separation, the system evolves into sharded domains.
+
+#### ID Generation Evolution
+
+Transition to long-lived service instances (K8s/EC2) with stable machine IDs. This allows local ID generation (Standard Snowflake), removing the database bottleneck while maintaining ID format compatibility.
 
 #### **Identity Domain**
 
