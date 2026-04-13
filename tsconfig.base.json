@@ -2,13 +2,12 @@
   "compilerOptions": {
     /* Project Options */
     "incremental": true,
-    "baseUrl": ".",
     "paths": {
-      "@mini-slack/config/*": ["packages/config/*"],
-      "@mini-slack/contracts/*": ["packages/contracts/*"],
-      "@mini-slack/errors/*": ["packages/errors/*"],
-      "@mini-slack/id-gen/*": ["packages/id-gen/*"],
-      "@mini-slack/logger/*": ["packages/logger/*"]
+      "@mini-slack/config/*": ["./packages/config/*"],
+      "@mini-slack/contracts/*": ["./packages/contracts/*"],
+      "@mini-slack/errors/*": ["./packages/errors/*"],
+      "@mini-slack/id-gen/*": ["./packages/id-gen/*"],
+      "@mini-slack/logger/*": ["./packages/logger/*"]
     },
 
     /* Language and Environment */
