@@ -90,14 +90,16 @@ CREATE TABLE users (
   name VARCHAR(255),
   email VARCHAR(255) UNIQUE NOT NULL,
   email_verified BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX users_email_uidx ON users(email);
 
 CREATE TABLE accounts (
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   id BIGINT NOT NULL,
-  provider_id VARCHAR(50) NOT NULL, -- e.g., 'google', 'email'
+  provider_id VARCHAR(50) NOT NULL,
   provider_account_id VARCHAR(255) NOT NULL,
   access_token TEXT,
   refresh_token TEXT,
@@ -105,10 +107,12 @@ CREATE TABLE accounts (
   refresh_token_expires_at TIMESTAMPTZ,
   scope TEXT,
   password TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (user_id, id)
 );
+
+CREATE UNIQUE INDEX accounts_provider_account_id_uidx ON accounts(provider_id, provider_account_id);
 
 CREATE TABLE sessions (
   user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -117,8 +121,8 @@ CREATE TABLE sessions (
   expires_at TIMESTAMPTZ NOT NULL,
   user_agent TEXT,
   ip_address VARCHAR(45),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (user_id, id)
 );
 
@@ -127,8 +131,8 @@ CREATE TABLE verifications (
   identifier VARCHAR(255) NOT NULL,
   value VARCHAR(255) NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE passkeys (
@@ -141,7 +145,7 @@ CREATE TABLE passkeys (
   device_type VARCHAR(50) NOT NULL,
   backed_up BOOLEAN NOT NULL,
   transports TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (user_id, id)
 );
 
@@ -150,8 +154,8 @@ CREATE TABLE two_factors (
   id BIGINT NOT NULL,
   secret TEXT NOT NULL,
   backup_codes TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (user_id, id)
 );
 ```
@@ -159,35 +163,44 @@ CREATE TABLE two_factors (
 ### Messaging Domain (Workspace Partitioned)
 
 ```sql
+CREATE TYPE member_role AS ENUM ('owner', 'admin', 'member');
+CREATE TYPE channel_type AS ENUM ('public', 'private');
+CREATE TYPE invitation_status AS ENUM ('pending', 'accepted', 'rejected', 'expired');
+CREATE TYPE file_status AS ENUM ('temporary', 'in_use', 'deleted');
+
 CREATE TABLE workspaces (
   id BIGINT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   slug VARCHAR(255) UNIQUE NOT NULL,
   logo_url VARCHAR(512),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX workspaces_slug_uidx ON workspaces(slug);
 
 CREATE TABLE workspace_members (
   workspace_id BIGINT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
   user_id BIGINT NOT NULL,
-  role VARCHAR(50) NOT NULL DEFAULT 'member',
-  display_name VARCHAR(255),
+  role member_role NOT NULL DEFAULT 'member',
+  name VARCHAR(255),
   avatar_url VARCHAR(512),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (workspace_id, user_id)
 );
+
+CREATE INDEX workspace_members_user_id_idx ON workspace_members(user_id);
 
 CREATE TABLE workspace_invitations (
   workspace_id BIGINT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
   id BIGINT NOT NULL,
   email VARCHAR(255) NOT NULL,
-  role VARCHAR(50) DEFAULT 'member',
-  status VARCHAR(50) DEFAULT 'pending',
+  role member_role DEFAULT 'member',
+  status invitation_status DEFAULT 'pending',
   expires_at TIMESTAMPTZ NOT NULL,
   inviter_id BIGINT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (workspace_id, id)
 );
 
@@ -195,22 +208,29 @@ CREATE TABLE channels (
   workspace_id BIGINT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
   id BIGINT NOT NULL,
   name VARCHAR(255) NOT NULL,
-  owner_id BIGINT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
+  type channel_type NOT NULL DEFAULT 'public',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (workspace_id, id)
 );
+
+CREATE UNIQUE INDEX channels_name_uidx ON channels(workspace_id, name);
 
 CREATE TABLE channel_members (
   workspace_id BIGINT NOT NULL,
   channel_id BIGINT NOT NULL,
   user_id BIGINT NOT NULL,
-  role VARCHAR(50) NOT NULL DEFAULT 'member',
+  role member_role NOT NULL DEFAULT 'member',
   last_seen_message_id BIGINT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (workspace_id, channel_id, user_id),
-  CONSTRAINT fk_channel
+  CONSTRAINT channel_fk
     FOREIGN KEY (workspace_id, channel_id)
     REFERENCES channels(workspace_id, id) ON DELETE CASCADE
 );
+
+CREATE INDEX channel_members_user_id_idx ON channel_members(workspace_id, user_id);
 
 CREATE TABLE messages (
   workspace_id BIGINT NOT NULL,
@@ -218,10 +238,10 @@ CREATE TABLE messages (
   id BIGINT NOT NULL,
   content TEXT NOT NULL,
   author_id BIGINT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ,
   PRIMARY KEY (workspace_id, channel_id, id),
-  CONSTRAINT fk_channel
+  CONSTRAINT channel_fk
     FOREIGN KEY (workspace_id, channel_id)
     REFERENCES channels(workspace_id, id) ON DELETE CASCADE
 );
@@ -233,9 +253,9 @@ CREATE TABLE reactions (
   message_id BIGINT NOT NULL,
   user_id BIGINT NOT NULL,
   emoji VARCHAR(50) NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (workspace_id, channel_id, id),
-  CONSTRAINT fk_message
+  CONSTRAINT message_fk
     FOREIGN KEY (workspace_id, channel_id, message_id)
     REFERENCES messages(workspace_id, channel_id, id) ON DELETE CASCADE
 );
@@ -248,7 +268,7 @@ CREATE TABLE files (
   name VARCHAR(255) NOT NULL,
   type VARCHAR(100),
   size BIGINT,
-  status VARCHAR(50) DEFAULT 'temporary',
+  status file_status DEFAULT 'temporary',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, id)
 );
@@ -260,10 +280,10 @@ CREATE TABLE message_files (
   file_id BIGINT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (workspace_id, channel_id, message_id, file_id),
-  CONSTRAINT fk_file
+  CONSTRAINT file_fk
     FOREIGN KEY (workspace_id, file_id)
     REFERENCES files(workspace_id, id) ON DELETE CASCADE,
-  CONSTRAINT fk_message
+  CONSTRAINT message_fk
     FOREIGN KEY (workspace_id, channel_id, message_id)
     REFERENCES messages(workspace_id, channel_id, id) ON DELETE CASCADE
 );
@@ -278,13 +298,22 @@ CREATE TABLE outbox (
   aggregate_type VARCHAR(50) NOT NULL,
   aggregate_id BIGINT NOT NULL,
   event_type VARCHAR(100) NOT NULL,
-  payload TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
+  payload JSONB NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   published_at TIMESTAMPTZ,
   PRIMARY KEY (partition_key, id)
 );
 
-CREATE INDEX idx_outbox_unpublished ON outbox(created_at) WHERE published_at IS NULL;
+CREATE INDEX outbox_unpublished_idx ON outbox(id) WHERE published_at IS NULL;
+
+CREATE TABLE id_sequences (
+  key1 BIGINT NOT NULL,
+  key2 BIGINT NOT NULL,
+  realm VARCHAR(50) NOT NULL,
+  last_timestamp BIGINT NOT NULL,
+  sequence BIGINT NOT NULL,
+  PRIMARY KEY (key1, key2, realm)
+);
 ```
 
 ## Task Breakdown
