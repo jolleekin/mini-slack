@@ -1,7 +1,0 @@
-{
-  "name": "@mini-slack/contracts",
-  "version": "1.0.0",
-  "description": "Shared types and DTOs",
-  "type": "module",
-  "main": "index.ts"
-}

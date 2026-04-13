@@ -71,7 +71,7 @@ partitioning all data by `workspace_id`.
 │   ├── messaging-outbox/      # Messaging Outbox Worker
 │   └── file-cleanup/          # File Cleanup Worker
 ├── packages/
-│   ├── contracts/            # Shared TypeScript types
+│   ├── events/               # Shared event contracts
 │   ├── db/                   # Drizzle ORM schema & migrations
 │   ├── id-gen/               # Snowflake ID generator
 │   └── logger/               # Structured logging
@@ -333,7 +333,7 @@ CREATE TABLE id_sequences (
 
 - [x] **1.3 Shared Packages**
   - `packages/db`: Drizzle ORM schema & migrations
-  - `packages/contracts`: Shared TypeScript types & DTOs (types only, no validation)
+  - `packages/events`: Shared event contracts
   - `packages/logger`: Pino-based structured logging
   - `packages/errors`: `AppError`, `NotFoundError`, `ValidationError`
   - Note: Zod schemas live in domain modules (`lib/**/schemas.ts`)
@@ -498,7 +498,7 @@ organization({
 ```bash
 # Unit tests
 npm run test -w packages/id-gen
-npm run test -w packages/contracts
+npm run test -w packages/events
 
 # Integration tests
 npm run test:integration -w apps/web

@@ -1,0 +1,7 @@
+{
+  "name": "@mini-slack/events",
+  "version": "1.0.0",
+  "description": "Shared event contracts",
+  "type": "module",
+  "main": "index.ts"
+}

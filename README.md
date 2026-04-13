@@ -110,7 +110,7 @@ mini-slack/
 │   └── file-cleanup/              # Cleans up orphaned uploads
 │
 ├── packages/                      # Shared code
-│   ├── contracts/                 # TypeScript types & DTOs
+│   ├── events/                    # Shared event contracts
 │   ├── db/                        # Drizzle ORM schema & migrations
 │   ├── id-gen/                    # Snowflake ID generator
 │   ├── logger/                    # Structured logging

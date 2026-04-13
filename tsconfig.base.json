@@ -4,7 +4,8 @@
     "incremental": true,
     "paths": {
       "@mini-slack/config/*": ["./packages/config/*"],
-      "@mini-slack/contracts/*": ["./packages/contracts/*"],
+      "@mini-slack/db/*": ["./packages/db/*"],
+      "@mini-slack/events/*": ["./packages/events/*"],
       "@mini-slack/errors/*": ["./packages/errors/*"],
       "@mini-slack/id-gen/*": ["./packages/id-gen/*"],
       "@mini-slack/logger/*": ["./packages/logger/*"]
