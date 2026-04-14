@@ -2,18 +2,17 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   CUSTOM_EPOCH,
+  Id,
   SnowflakeGenerator,
-  generateId,
-  idToString,
-  initGenerator,
+  generateSnowflakeId,
+  initializeSnowflakeGenerator,
   parseId,
-  stringToId,
 } from "./index";
 
 describe("Snowflake ID Generator", () => {
   beforeEach(() => {
     // Reset generator before each test
-    initGenerator({ machineId: 0 });
+    initializeSnowflakeGenerator({ machineId: 0 });
   });
 
   describe("SnowflakeGenerator", () => {
@@ -23,7 +22,7 @@ describe("Snowflake ID Generator", () => {
       const id2 = generator.generate();
 
       expect(id1).not.toBe(id2);
-      expect(id2).toBeGreaterThan(id1);
+      expect(BigInt(id2)).toBeGreaterThan(BigInt(id1));
     });
 
     it("should throw error for invalid machine ID", () => {
@@ -33,7 +32,7 @@ describe("Snowflake ID Generator", () => {
 
     it("should handle sequence overflow within same millisecond", () => {
       const generator = new SnowflakeGenerator({ machineId: 0 });
-      const ids = new Set<bigint>();
+      const ids = new Set<Id>();
 
       // Generate multiple IDs rapidly
       for (let i = 0; i < 100; i++) {
@@ -55,19 +54,19 @@ describe("Snowflake ID Generator", () => {
 
   describe("generateId", () => {
     it("should generate valid IDs using singleton", () => {
-      const id1 = generateId();
-      const id2 = generateId();
+      const id1 = generateSnowflakeId();
+      const id2 = generateSnowflakeId();
 
       expect(id1).toBeDefined();
       expect(id2).toBeDefined();
-      expect(id2).toBeGreaterThan(id1);
+      expect(BigInt(id2)).toBeGreaterThan(BigInt(id1));
     });
 
     it("should use MACHINE_ID from environment", () => {
       process.env.MACHINE_ID = "123";
-      initGenerator();
+      initializeSnowflakeGenerator();
 
-      const id = generateId();
+      const id = generateSnowflakeId();
       const parsed = parseId(id);
 
       expect(parsed.machineId).toBe(123);
@@ -78,7 +77,7 @@ describe("Snowflake ID Generator", () => {
 
   describe("parseId", () => {
     it("should correctly parse a Snowflake ID", () => {
-      const id = generateId();
+      const id = generateSnowflakeId();
       const parsed = parseId(id);
 
       expect(parsed.timestamp).toBeInstanceOf(Date);
@@ -89,7 +88,7 @@ describe("Snowflake ID Generator", () => {
     });
 
     it("should parse timestamp relative to custom epoch", () => {
-      const id = generateId();
+      const id = generateSnowflakeId();
       const parsed = parseId(id);
       const now = Date.now();
 
@@ -98,30 +97,11 @@ describe("Snowflake ID Generator", () => {
     });
 
     it("should correctly extract machine ID", () => {
-      initGenerator({ machineId: 456 });
-      const id = generateId();
+      initializeSnowflakeGenerator({ machineId: 456 });
+      const id = generateSnowflakeId();
       const parsed = parseId(id);
 
       expect(parsed.machineId).toBe(456);
-    });
-  });
-
-  describe("String conversion", () => {
-    it("should convert ID to string and back", () => {
-      const id = generateId();
-      const str = idToString(id);
-      const converted = stringToId(str);
-
-      expect(typeof str).toBe("string");
-      expect(converted).toBe(id);
-    });
-
-    it("should handle large IDs", () => {
-      const largeId = (1n << 63n) - 1n;
-      const str = idToString(largeId);
-      const converted = stringToId(str);
-
-      expect(converted).toBe(largeId);
     });
   });
 
@@ -134,7 +114,7 @@ describe("Snowflake ID Generator", () => {
 
   describe("ID structure", () => {
     it("should generate IDs with correct bit structure", () => {
-      const id = generateId();
+      const id = generateSnowflakeId();
       const parsed = parseId(id);
 
       // Verify all components are within valid ranges
@@ -151,7 +131,7 @@ describe("Snowflake ID Generator", () => {
       const ids: bigint[] = [];
 
       for (let i = 0; i < 1000; i++) {
-        ids.push(generateId());
+        ids.push(BigInt(generateSnowflakeId()));
       }
 
       for (let i = 1; i < ids.length; i++) {
@@ -208,7 +188,7 @@ describe("Snowflake ID Generator", () => {
       };
 
       const id1 = generator.generate();
-      expect(id1).toBeGreaterThan(id0);
+      expect(BigInt(id1)).toBeGreaterThan(BigInt(id0));
     });
   });
 });
