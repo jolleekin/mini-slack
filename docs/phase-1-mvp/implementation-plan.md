@@ -380,17 +380,16 @@ organization({
 });
 ```
 
-- [ ] **2.2 Feature Logic (Core Services)**
+- [x] **2.2 Infrastructure**
+  - Drizzle client initialization and transaction helpers
+  - Add outbox table to schema
+  - Create `publishEvent()` helper that writes to outbox in same transaction
+
+- [ ] **2.3 Feature Logic (Core Services)**
   - `lib/identity`: User CRUD, profile updates, session revocation logic
   - `lib/messaging`: Workspace, Channel, Message, and Reaction business logic
   - `lib/files`: Direct-to-S3 orchestration and attachment state updates
   - `lib/search`: Full-text search orchestration
-  - `lib/common`: Drizzle client initialization and transaction helpers
-
-- [ ] **2.3 Transactional Outbox**
-  - Add outbox table to schema
-  - Create `publishEvent()` helper that writes to outbox in same transaction
-  - Implement `USER_UPDATED` event to trigger denormalized profile sync
 
 ### Milestone 3: Next.js Application
 
