@@ -13,8 +13,10 @@ export type WorkspaceRole = "owner" | "admin" | "member";
 export interface WorkspaceMemberEventPayload {
   workspaceId: Id;
   userId: Id;
-  displayName: string | null;
+  name: string | null;
   avatarUrl: string | null;
+  email: string;
+  emailVerified: boolean;
   role: WorkspaceRole;
   createdAt: Date;
 }

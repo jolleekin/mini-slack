@@ -15,3 +15,9 @@ export type UserSignedInEvent = BaseEvent<
   EventType.USER_SIGNED_IN,
   { user: UserEventPayload }
 >;
+
+export type UserUpdatedEvent = BaseEvent<
+  AggregateType.USER,
+  EventType.USER_UPDATED,
+  { user: UserEventPayload }
+>;

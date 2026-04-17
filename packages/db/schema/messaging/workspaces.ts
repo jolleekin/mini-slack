@@ -1,4 +1,5 @@
 import {
+  boolean,
   index,
   pgTable,
   primaryKey,
@@ -37,6 +38,8 @@ export const workspaceMembers = pgTable(
     role: memberRoleEnum("role").notNull().default("member"),
     name: varchar("name", { length: 255 }),
     avatarUrl: varchar("avatar_url", { length: 512 }),
+    email: varchar("email", { length: 255 }).notNull(),
+    emailVerified: boolean("email_verified").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -58,8 +61,8 @@ export const workspaceInvitations = pgTable(
       .notNull(),
     id: idType("id").notNull(),
     email: varchar("email", { length: 255 }).notNull(),
-    role: memberRoleEnum("role").default("member"),
-    status: invitationStatusEnum("status").default("pending"),
+    role: memberRoleEnum("role").notNull().default("member"),
+    status: invitationStatusEnum("status").notNull().default("pending"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     inviterId: idType("inviter_id").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })

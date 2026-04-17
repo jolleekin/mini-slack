@@ -19,6 +19,7 @@ export enum AggregateType {
  */
 export enum EventType {
   USER_SIGNED_IN = "USER_SIGNED_IN",
+  USER_UPDATED = "USER_UPDATED",
 
   WORKSPACE_CREATED = "WORKSPACE_CREATED",
   WORKSPACE_DELETED = "WORKSPACE_DELETED",
@@ -50,6 +51,7 @@ export interface BaseEvent<
 > {
   partitionKey: Id;
   id: Id;
+  actorId: Id | null;
   aggregateType: TAggregateType;
   aggregateId: Id;
   eventType: TEventType;

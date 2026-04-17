@@ -9,6 +9,7 @@ import type { MessageUpdatedEvent } from "./message.ts";
 import type { ReactionAddedEvent } from "./reaction.ts";
 import type { ReactionRemovedEvent } from "./reaction.ts";
 import type { UserSignedInEvent } from "./user.ts";
+import type { UserUpdatedEvent } from "./user.ts";
 import type { WorkspaceCreatedEvent } from "./workspace.ts";
 import type { WorkspaceDeletedEvent } from "./workspace.ts";
 import type { WorkspaceMemberAddedEvent } from "./workspace.ts";
@@ -25,6 +26,7 @@ export * from "./file.ts";
 
 export type AppEvent =
   | UserSignedInEvent
+  | UserUpdatedEvent
   | WorkspaceCreatedEvent
   | WorkspaceDeletedEvent
   | WorkspaceUpdatedEvent
