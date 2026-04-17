@@ -7,6 +7,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { auditFields } from "../audit.ts";
 import { idType } from "../types.ts";
 
 import { users } from "./users.ts";
@@ -32,12 +33,7 @@ export const accounts = pgTable(
     }),
     scope: text("scope"),
     password: text("password"), // used when providerId is "credentials".
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    ...auditFields(),
   },
   (t) => [
     primaryKey({ columns: [t.userId, t.id] }),

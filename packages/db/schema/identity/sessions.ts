@@ -7,6 +7,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { auditFields } from "../audit.ts";
 import { idType } from "../types.ts";
 
 import { users } from "./users.ts";
@@ -22,12 +23,7 @@ export const sessions = pgTable(
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     userAgent: text("user_agent"),
     ipAddress: varchar("ip_address", { length: 45 }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    ...auditFields(),
   },
   (t) => [
     primaryKey({ columns: [t.userId, t.id] }),

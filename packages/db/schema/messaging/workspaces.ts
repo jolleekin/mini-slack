@@ -7,6 +7,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { auditFields, createdAtField } from "../audit.ts";
 import { idType } from "../types.ts";
 
 import { invitationStatusEnum, memberRoleEnum } from "./enums.ts";
@@ -18,12 +19,7 @@ export const workspaces = pgTable(
     name: varchar("name", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).unique().notNull(),
     logoUrl: varchar("logo_url", { length: 512 }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    ...auditFields(),
   },
   (t) => [index("workspaces_slug_idx").on(t.slug)],
 );
@@ -40,12 +36,7 @@ export const workspaceMembers = pgTable(
     avatarUrl: varchar("avatar_url", { length: 512 }),
     email: varchar("email", { length: 255 }).notNull(),
     emailVerified: boolean("email_verified").notNull().default(false),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    ...auditFields(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.userId] }),
@@ -65,9 +56,7 @@ export const workspaceInvitations = pgTable(
     status: invitationStatusEnum("status").notNull().default("pending"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     inviterId: idType("inviter_id").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    createdAt: createdAtField(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.id] }),

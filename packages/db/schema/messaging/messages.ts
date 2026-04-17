@@ -4,10 +4,10 @@ import {
   pgTable,
   primaryKey,
   text,
-  timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { auditFields, createdAtField } from "../audit.ts";
 import { idType } from "../types.ts";
 
 import { channels } from "./channels.ts";
@@ -20,12 +20,7 @@ export const messages = pgTable(
     id: idType("id").notNull(),
     content: text("content").notNull(),
     authorId: idType("author_id").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    ...auditFields(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.channelId, t.id] }),
@@ -46,9 +41,7 @@ export const reactions = pgTable(
     messageId: idType("message_id").notNull(),
     userId: idType("user_id").notNull(),
     emoji: varchar("emoji", { length: 50 }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    createdAt: createdAtField(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.channelId, t.id] }),

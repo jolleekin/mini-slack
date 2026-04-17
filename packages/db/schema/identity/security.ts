@@ -10,6 +10,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { auditFields, createdAtField } from "../audit.ts";
 import { idType } from "../types.ts";
 
 import { users } from "./users.ts";
@@ -21,12 +22,7 @@ export const verifications = pgTable(
     identifier: varchar("identifier", { length: 255 }).notNull(),
     value: varchar("value", { length: 255 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    ...auditFields(),
   },
   (t) => [index("verifications_identifier_idx").on(t.identifier, t.value)],
 );
@@ -45,9 +41,7 @@ export const passkeys = pgTable(
     deviceType: varchar("device_type", { length: 50 }).notNull(),
     backedUp: boolean("backed_up").notNull(),
     transports: text("transports"),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    createdAt: createdAtField(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.id] })],
 );
@@ -61,12 +55,7 @@ export const twoFactors = pgTable(
     id: idType("id").notNull(),
     secret: text("secret").notNull(),
     backupCodes: text("backup_codes").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    ...auditFields(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.id] })],
 );

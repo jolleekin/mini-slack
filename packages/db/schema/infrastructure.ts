@@ -9,6 +9,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { createdAtField } from "./audit.ts";
 import { idType } from "./types.ts";
 
 export const outbox = pgTable(
@@ -20,9 +21,7 @@ export const outbox = pgTable(
     aggregateId: idType("aggregate_id").notNull(),
     eventType: varchar("event_type", { length: 100 }).notNull(),
     payload: jsonb("payload").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    createdAt: createdAtField(),
     publishedAt: timestamp("published_at", { withTimezone: true }),
   },
   (t) => [

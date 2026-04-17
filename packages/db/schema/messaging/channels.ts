@@ -3,11 +3,11 @@ import {
   index,
   pgTable,
   primaryKey,
-  timestamp,
   uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { auditFields } from "../audit.ts";
 import { idType } from "../types.ts";
 
 import { channelTypeEnum, memberRoleEnum } from "./enums.ts";
@@ -22,12 +22,7 @@ export const channels = pgTable(
     id: idType("id").notNull(),
     name: varchar("name", { length: 255 }).notNull(),
     type: channelTypeEnum("type").notNull().default("public"),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    ...auditFields(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.id] }),
@@ -43,12 +38,7 @@ export const channelMembers = pgTable(
     userId: idType("user_id").notNull(),
     role: memberRoleEnum("role").notNull().default("member"),
     lastSeenMessageId: idType("last_seen_message_id"),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    ...auditFields(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.channelId, t.userId] }),

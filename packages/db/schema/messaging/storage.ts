@@ -4,10 +4,10 @@ import {
   index,
   pgTable,
   primaryKey,
-  timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
 
+import { createdAtField } from "../audit.ts";
 import { idType } from "../types.ts";
 
 import { fileStatusEnum } from "./enums.ts";
@@ -27,7 +27,7 @@ export const files = pgTable(
     type: varchar("type", { length: 100 }),
     size: bigint("size", { mode: "number" }),
     status: fileStatusEnum("status").default("temporary"),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    createdAt: createdAtField(),
   },
   (t) => [
     primaryKey({ columns: [t.workspaceId, t.id] }),
@@ -42,7 +42,7 @@ export const messageFiles = pgTable(
     channelId: idType("channel_id").notNull(),
     messageId: idType("message_id").notNull(),
     fileId: idType("file_id").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    createdAt: createdAtField(),
   },
   (t) => [
     primaryKey({
