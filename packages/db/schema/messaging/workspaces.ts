@@ -10,7 +10,7 @@ import {
 import { auditFields, createdAtField } from "../audit.ts";
 import { idType } from "../types.ts";
 
-import { invitationStatusEnum, memberRoleEnum } from "./enums.ts";
+import { invitationStatusEnum, workspaceMemberRoleEnum } from "./enums.ts";
 
 export const workspaces = pgTable(
   "workspaces",
@@ -31,7 +31,7 @@ export const workspaceMembers = pgTable(
       .references(() => workspaces.id, { onDelete: "cascade" })
       .notNull(),
     userId: idType("user_id").notNull(),
-    role: memberRoleEnum("role").notNull().default("member"),
+    role: workspaceMemberRoleEnum("role").notNull().default("member"),
     name: varchar("name", { length: 255 }),
     avatarUrl: varchar("avatar_url", { length: 512 }),
     email: varchar("email", { length: 255 }).notNull(),
@@ -52,7 +52,7 @@ export const workspaceInvitations = pgTable(
       .notNull(),
     id: idType("id").notNull(),
     email: varchar("email", { length: 255 }).notNull(),
-    role: memberRoleEnum("role").notNull().default("member"),
+    role: workspaceMemberRoleEnum("role").notNull().default("member"),
     status: invitationStatusEnum("status").notNull().default("pending"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     inviterId: idType("inviter_id").notNull(),

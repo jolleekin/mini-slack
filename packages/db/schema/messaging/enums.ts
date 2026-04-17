@@ -2,9 +2,14 @@ import { pgEnum } from "drizzle-orm/pg-core";
 
 export const channelTypeEnum = pgEnum("channel_type", ["public", "private"]);
 
-export const memberRoleEnum = pgEnum("member_role", [
+export const workspaceMemberRoleEnum = pgEnum("workspace_member_role", [
   "owner",
   "admin",
+  "member",
+]);
+
+export const channelMemberRoleEnum = pgEnum("channel_member_role", [
+  "owner",
   "member",
 ]);
 

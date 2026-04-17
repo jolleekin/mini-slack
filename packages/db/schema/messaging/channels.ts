@@ -10,7 +10,7 @@ import {
 import { auditFields } from "../audit.ts";
 import { idType } from "../types.ts";
 
-import { channelTypeEnum, memberRoleEnum } from "./enums.ts";
+import { channelMemberRoleEnum, channelTypeEnum } from "./enums.ts";
 import { workspaces } from "./workspaces.ts";
 
 export const channels = pgTable(
@@ -36,7 +36,7 @@ export const channelMembers = pgTable(
     workspaceId: idType("workspace_id").notNull(),
     channelId: idType("channel_id").notNull(),
     userId: idType("user_id").notNull(),
-    role: memberRoleEnum("role").notNull().default("member"),
+    role: channelMemberRoleEnum("role").notNull().default("member"),
     lastSeenMessageId: idType("last_seen_message_id"),
     ...auditFields(),
   },
