@@ -9,7 +9,7 @@ export const users = pgTable(
     id: idType("id").primaryKey(),
     name: varchar("name", { length: 255 }),
     email: varchar("email", { length: 255 }).unique().notNull(),
-    emailVerified: boolean("email_verified").default(false),
+    emailVerified: boolean("email_verified").notNull().default(false),
     ...auditFields(),
   },
   (t) => [index("users_email_idx").on(t.email)],
