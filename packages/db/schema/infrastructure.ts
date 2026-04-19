@@ -17,6 +17,7 @@ export const outbox = pgTable(
   {
     partitionKey: idType("partition_key").notNull(),
     id: idType("id").notNull(),
+    actorId: idType("actor_id").notNull(),
     aggregateType: varchar("aggregate_type", { length: 50 }).notNull(),
     aggregateId: idType("aggregate_id").notNull(),
     eventType: varchar("event_type", { length: 100 }).notNull(),

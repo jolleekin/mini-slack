@@ -1,0 +1,1 @@
+ALTER TABLE "outbox" ADD COLUMN "actor_id" bigint NOT NULL;

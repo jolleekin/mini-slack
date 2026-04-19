@@ -51,7 +51,7 @@ export interface BaseEvent<
 > {
   partitionKey: Id;
   id: Id;
-  actorId: Id | null;
+  actorId: Id;
   aggregateType: TAggregateType;
   aggregateId: Id;
   eventType: TEventType;
