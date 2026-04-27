@@ -1,18 +1,26 @@
+export type AppErrorCode =
+  | "INTERNAL"
+  | "NOT_FOUND"
+  | "VALIDATION"
+  | "UNAUTHENTICATED"
+  | "FORBIDDEN"
+  | "CONFLICT";
+
 /**
  * Base class for all application errors.
  */
 export class AppError extends Error {
-  public readonly statusCode: number;
-  public readonly metadata?: Record<string, unknown>;
+  readonly code: AppErrorCode;
+  readonly metadata?: Record<string, unknown>;
 
   constructor(
     message: string,
-    statusCode: number = 500,
+    code: AppErrorCode = "INTERNAL",
     metadata?: Record<string, unknown>,
   ) {
     super(message);
     this.name = this.constructor.name;
-    this.statusCode = statusCode;
+    this.code = code;
     this.metadata = metadata;
   }
 }
@@ -25,7 +33,7 @@ export class NotFoundError extends AppError {
     message = "Resource not found",
     metadata?: Record<string, unknown>,
   ) {
-    super(message, 404, metadata);
+    super(message, "NOT_FOUND", metadata);
   }
 }
 
@@ -37,7 +45,7 @@ export class ValidationError extends AppError {
     message = "Validation failed",
     metadata?: Record<string, unknown>,
   ) {
-    super(message, 400, metadata);
+    super(message, "VALIDATION", metadata);
   }
 }
 
@@ -46,7 +54,7 @@ export class ValidationError extends AppError {
  */
 export class UnauthorizedError extends AppError {
   constructor(message = "Unauthorized", metadata?: Record<string, unknown>) {
-    super(message, 401, metadata);
+    super(message, "UNAUTHENTICATED", metadata);
   }
 }
 
@@ -55,7 +63,7 @@ export class UnauthorizedError extends AppError {
  */
 export class ForbiddenError extends AppError {
   constructor(message = "Forbidden", metadata?: Record<string, unknown>) {
-    super(message, 403, metadata);
+    super(message, "FORBIDDEN", metadata);
   }
 }
 
@@ -64,6 +72,6 @@ export class ForbiddenError extends AppError {
  */
 export class ConflictError extends AppError {
   constructor(message = "Conflict", metadata?: Record<string, unknown>) {
-    super(message, 409, metadata);
+    super(message, "CONFLICT", metadata);
   }
 }

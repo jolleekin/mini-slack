@@ -11,57 +11,57 @@ import {
 
 describe("Error Classes", () => {
   describe("AppError", () => {
-    it("should set default status code to 500", () => {
+    it("should set default error code to INTERNAL", () => {
       const error = new AppError("Test error");
-      expect(error.statusCode).toBe(500);
+      expect(error.code).toBe("INTERNAL");
       expect(error.message).toBe("Test error");
       expect(error.name).toBe("AppError");
     });
 
-    it("should set custom status code and metadata", () => {
+    it("should set custom error code and metadata", () => {
       const metadata = { foo: "bar" };
-      const error = new AppError("Test error", 503, metadata);
-      expect(error.statusCode).toBe(503);
+      const error = new AppError("Test error", "FORBIDDEN", metadata);
+      expect(error.code).toBe("FORBIDDEN");
       expect(error.metadata).toEqual(metadata);
     });
   });
 
   describe("NotFoundError", () => {
-    it("should have status code 404", () => {
+    it("should have NOT_FOUND code", () => {
       const error = new NotFoundError();
-      expect(error.statusCode).toBe(404);
+      expect(error.code).toBe("NOT_FOUND");
       expect(error.message).toBe("Resource not found");
     });
   });
 
   describe("ValidationError", () => {
-    it("should have status code 400", () => {
+    it("should have VALIDATION code", () => {
       const error = new ValidationError();
-      expect(error.statusCode).toBe(400);
+      expect(error.code).toBe("VALIDATION");
       expect(error.message).toBe("Validation failed");
     });
   });
 
   describe("UnauthorizedError", () => {
-    it("should have status code 401", () => {
+    it("should have UNAUTHENTICATED code", () => {
       const error = new UnauthorizedError();
-      expect(error.statusCode).toBe(401);
+      expect(error.code).toBe("UNAUTHENTICATED");
       expect(error.message).toBe("Unauthorized");
     });
   });
 
   describe("ForbiddenError", () => {
-    it("should have status code 403", () => {
+    it("should have FORBIDDEN code", () => {
       const error = new ForbiddenError();
-      expect(error.statusCode).toBe(403);
+      expect(error.code).toBe("FORBIDDEN");
       expect(error.message).toBe("Forbidden");
     });
   });
 
   describe("ConflictError", () => {
-    it("should have status code 409", () => {
+    it("should have CONFLICT code", () => {
       const error = new ConflictError();
-      expect(error.statusCode).toBe(409);
+      expect(error.code).toBe("CONFLICT");
       expect(error.message).toBe("Conflict");
     });
   });
