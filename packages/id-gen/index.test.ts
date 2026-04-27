@@ -7,7 +7,7 @@ import {
   generateSnowflakeId,
   initializeSnowflakeGenerator,
   parseId,
-} from "./index";
+} from "./index.ts";
 
 describe("Snowflake ID Generator", () => {
   beforeEach(() => {

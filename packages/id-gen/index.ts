@@ -1,6 +1,7 @@
 import { idSequences } from "@mini-slack/db/index.ts";
 import { ExtractTablesWithRelations, sql } from "drizzle-orm";
 import { PgTransaction } from "drizzle-orm/pg-core";
+import { PgliteTransaction } from "drizzle-orm/pglite";
 import { PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";
 
 /**
@@ -107,11 +108,13 @@ type Schema = {
  * Generates a strictly increasing Snowflake ID within a specific partition using a database sequence.
  */
 export async function generateSequentialId(
-  tx: PgTransaction<
-    PostgresJsQueryResultHKT,
-    Schema,
-    ExtractTablesWithRelations<Schema>
-  >,
+  tx:
+    | PgTransaction<
+        PostgresJsQueryResultHKT,
+        Schema,
+        ExtractTablesWithRelations<Schema>
+      >
+    | PgliteTransaction<Schema, ExtractTablesWithRelations<Schema>>,
   key1: string,
   key2: string,
   realm: string,
@@ -134,10 +137,7 @@ export async function generateSequentialId(
         lastTimestamp: now,
       },
     })
-    .returning({
-      lastTimestamp: idSequences.lastTimestamp,
-      sequence: idSequences.sequence,
-    });
+    .returning();
 
   return constructId(row.lastTimestamp, row.sequence);
 }
