@@ -10,8 +10,11 @@ export interface MessageEventPayload {
   workspaceId: Id;
   channelId: Id;
   id: Id;
-  content: string;
+  type: string;
+  richText: unknown;
+  plainText: string;
   authorId: Id | null;
+  metadata: Record<string, string | null> | null;
   createdAt: Date;
   updatedAt: Date | null;
 }
@@ -21,7 +24,7 @@ export type MessageCreatedEvent = BaseEvent<
   EventType.MESSAGE_CREATED,
   {
     message: MessageEventPayload;
-    author: MessageAuthor;
+    author: MessageAuthor | null;
   }
 >;
 

@@ -18,13 +18,3 @@ export const idType = customType<{
     return value.toString();
   },
 });
-
-export const jsonbType = <TData>(name: string) =>
-  customType<{ data: TData; driverData: string }>({
-    dataType() {
-      return "jsonb";
-    },
-    toDriver(value: TData): string {
-      return JSON.stringify(value);
-    },
-  })(name);

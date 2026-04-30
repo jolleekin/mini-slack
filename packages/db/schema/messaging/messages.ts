@@ -1,6 +1,7 @@
 import {
   foreignKey,
   index,
+  jsonb,
   pgTable,
   primaryKey,
   text,
@@ -18,8 +19,11 @@ export const messages = pgTable(
     workspaceId: idType("workspace_id").notNull(),
     channelId: idType("channel_id").notNull(),
     id: idType("id").notNull(),
-    content: text("content").notNull(),
-    authorId: idType("author_id").notNull(),
+    type: text("type").notNull().default("message"),
+    richText: jsonb("rich_text").notNull(),
+    plainText: text("plain_text").notNull(),
+    authorId: idType("author_id"),
+    metadata: jsonb("metadata").$type<Record<string, string | null>>(),
     ...auditFields(),
   },
   (t) => [
