@@ -1,0 +1,13 @@
+{
+  "name": "@mini-slack/i18n",
+  "version": "1.0.0",
+  "description": "Shared localization utility for MiniSlack",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.18"
+  }
+}
