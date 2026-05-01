@@ -42,6 +42,15 @@ declare module "@mini-slack/errors/index" {
     /** Cannot downgrade the last owner of the channel. */
     "channels.members.cant_downgrade_last_owner": never;
 
+    /** User does not have permission to create a message in this channel. */
+    "messages.cant_create": never;
+    /** The requested channel message could not be found. */
+    "messages.not_found": { messageId: string };
+    /** User does not have permission to update this message. */
+    "messages.cant_update": { messageId: string };
+    /** User does not have permission to delete this message. */
+    "messages.cant_delete": { messageId: string };
+
     /** Workspace slug (URL) is already in use. */
     "workspaces.slug_taken": { slug: string };
     /** Workspace could not be found. */

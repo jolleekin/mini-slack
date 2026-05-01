@@ -24,6 +24,12 @@
       "cant_downgrade_last_owner": "You cannot downgrade the last channel owner"
     }
   },
+  "messages": {
+    "cant_create": "You are not allowed to create messages in this channel",
+    "not_found": "Channel message not found",
+    "cant_update": "You are not allowed to update this message",
+    "cant_delete": "You are not allowed to delete this message"
+  },
   "workspaces": {
     "slug_taken": "A workspace with that slug already exists",
     "not_found": "Workspace not found",
