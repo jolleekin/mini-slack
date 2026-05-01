@@ -38,6 +38,16 @@
       "not_found": "Workspace member not found",
       "already_member": "User is already a member of this workspace",
       "cant_downgrade_last_owner": "You cannot downgrade the last workspace owner"
+    },
+    "invitations": {
+      "already_exists": "An invitation for that email already exists",
+      "not_found": "Workspace invitation not found",
+      "not_pending": "This invitation is not pending",
+      "expired": "This invitation has expired",
+      "cant_create": "You are not allowed to create workspace invitations",
+      "cant_view": "You are not allowed to view workspace invitations",
+      "cant_accept": "You are not allowed to accept this invitation",
+      "cant_revoke": "You are not allowed to revoke this invitation"
     }
   }
 }

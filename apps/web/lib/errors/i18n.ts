@@ -68,6 +68,23 @@ declare module "@mini-slack/errors/index" {
     /** Cannot downgrade the last workspace owner. */
     "workspaces.members.cant_downgrade_last_owner": never;
 
+    /** An invitation for this email already exists. */
+    "workspaces.invitations.already_exists": { email: string };
+    /** Workspace invitation could not be found. */
+    "workspaces.invitations.not_found": never;
+    /** The invitation can't be accepted as it is not currently pending. */
+    "workspaces.invitations.not_pending": { status: string };
+    /** The invitation has already expired. */
+    "workspaces.invitations.expired": never;
+    /** User does not have permission to create workspace invitations. */
+    "workspaces.invitations.cant_create": never;
+    /** User does not have permission to view workspace invitations. */
+    "workspaces.invitations.cant_view": never;
+    /** User does not have permission to accept this invitation. */
+    "workspaces.invitations.cant_accept": never;
+    /** User does not have permission to revoke this invitation. */
+    "workspaces.invitations.cant_revoke": never;
+
     /** User must be signed in to perform this action. */
     user_auth_required: never;
     /** A workspace context is required to perform this action. */
