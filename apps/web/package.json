@@ -6,12 +6,17 @@
     "dev": "dotenv -e ../../.env -- next dev",
     "build": "dotenv -e ../../.env -- next build",
     "start": "dotenv -e ../../.env -- next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run"
   },
   "dependencies": {
     "@mini-slack/db": "*",
+    "@mini-slack/errors": "*",
     "@mini-slack/events": "*",
+    "@mini-slack/i18n": "*",
     "@mini-slack/id-gen": "*",
+    "@orpc/client": "^1.14.0",
+    "@orpc/server": "^1.14.0",
     "better-auth": "^1.6.3",
     "drizzle-orm": "^0.45.1",
     "next": "^16.1.6",
@@ -20,6 +25,7 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.4.4",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -29,6 +35,7 @@
     "eslint-config-next": "16.1.1",
     "postcss": "^8.5.8",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.4"
   }
 }

@@ -9,12 +9,10 @@
     "paths": {
       "@/*": ["./*"],
       "@mini-slack/db/*": ["../../packages/db/*"],
-      "@mini-slack/id-gen/*": ["../../packages/id-gen/*"],
-      "@mini-slack/logger/*": ["../../packages/logger/*"],
       "@mini-slack/errors/*": ["../../packages/errors/*"],
-      "@mini-slack/auth-client/*": ["../../packages/auth-client/*"],
-      "@mini-slack/http-client/*": ["../../packages/http-client/*"],
-      "@mini-slack/config/*": ["../../packages/config/*"]
+      "@mini-slack/events/*": ["../../packages/events/*"],
+      "@mini-slack/id-gen/*": ["../../packages/id-gen/*"],
+      "@mini-slack/logger/*": ["../../packages/logger/*"]
     }
   },
   "include": [

@@ -1,0 +1,43 @@
+{
+  "not_found": "Resource not found",
+  "validation": "Validation failed",
+  "unauthenticated": "You are not logged in",
+  "forbidden": "Access denied",
+  "conflict": "A conflict occurred with the current state of the resource",
+  "internal": "An unexpected error occurred",
+  "user_auth_required": "You must be signed in to perform this action",
+  "workspace_context_required": "A workspace context is required to perform this action",
+  "workspace_access_denied": "You do not have access to this workspace",
+  "channels": {
+    "name_taken": "A channel with that name already exists",
+    "not_found": "Channel not found",
+    "cant_view": "You are not allowed to view this channel",
+    "cant_update": "You are not allowed to update this channel",
+    "cant_delete": "You are not allowed to delete this channel",
+    "members": {
+      "cant_add": "You are not allowed to add members to this channel",
+      "cant_remove": "You are not allowed to remove members from this channel",
+      "cant_update": "You are not allowed to update this channel member",
+      "cant_view": "You are not allowed to view channel members",
+      "not_found": "Channel member not found",
+      "already_member": "User is already a member of this channel",
+      "cant_downgrade_last_owner": "You cannot downgrade the last channel owner"
+    }
+  },
+  "workspaces": {
+    "slug_taken": "A workspace with that slug already exists",
+    "not_found": "Workspace not found",
+    "cant_update": "You are not allowed to update this workspace",
+    "cant_delete": "You are not allowed to delete this workspace",
+    "members": {
+      "cant_view": "You are not allowed to view workspace members",
+      "cant_update_role": "You are not allowed to update this member's role",
+      "cant_update_profile": "You are not allowed to update this member's profile",
+      "cant_remove": "You are not allowed to remove this workspace member",
+      "cant_remove_last_owner": "You cannot remove the last workspace owner",
+      "not_found": "Workspace member not found",
+      "already_member": "User is already a member of this workspace",
+      "cant_downgrade_last_owner": "You cannot downgrade the last workspace owner"
+    }
+  }
+}
