@@ -5,24 +5,18 @@ import {
   ConflictError,
   ForbiddenError,
   NotFoundError,
-  UnauthorizedError,
+  UnauthenticatedError,
   ValidationError,
 } from "./index.ts";
 
 describe("Error Classes", () => {
   describe("AppError", () => {
-    it("should set default error code to INTERNAL", () => {
-      const error = new AppError("Test error");
-      expect(error.code).toBe("INTERNAL");
-      expect(error.message).toBe("Test error");
-      expect(error.name).toBe("AppError");
-    });
-
     it("should set custom error code and metadata", () => {
       const metadata = { foo: "bar" };
-      const error = new AppError("Test error", "FORBIDDEN", metadata);
+      const error = new AppError("FORBIDDEN", { i18nKey: "key", metadata });
       expect(error.code).toBe("FORBIDDEN");
-      expect(error.metadata).toEqual(metadata);
+      expect(error.i18nKey).toBe("key");
+      expect(error.data).toEqual(metadata);
     });
   });
 
@@ -30,7 +24,6 @@ describe("Error Classes", () => {
     it("should have NOT_FOUND code", () => {
       const error = new NotFoundError();
       expect(error.code).toBe("NOT_FOUND");
-      expect(error.message).toBe("Resource not found");
     });
   });
 
@@ -38,15 +31,13 @@ describe("Error Classes", () => {
     it("should have VALIDATION code", () => {
       const error = new ValidationError();
       expect(error.code).toBe("VALIDATION");
-      expect(error.message).toBe("Validation failed");
     });
   });
 
   describe("UnauthorizedError", () => {
     it("should have UNAUTHENTICATED code", () => {
-      const error = new UnauthorizedError();
+      const error = new UnauthenticatedError();
       expect(error.code).toBe("UNAUTHENTICATED");
-      expect(error.message).toBe("Unauthorized");
     });
   });
 
@@ -54,7 +45,6 @@ describe("Error Classes", () => {
     it("should have FORBIDDEN code", () => {
       const error = new ForbiddenError();
       expect(error.code).toBe("FORBIDDEN");
-      expect(error.message).toBe("Forbidden");
     });
   });
 
@@ -62,7 +52,6 @@ describe("Error Classes", () => {
     it("should have CONFLICT code", () => {
       const error = new ConflictError();
       expect(error.code).toBe("CONFLICT");
-      expect(error.message).toBe("Conflict");
     });
   });
 });

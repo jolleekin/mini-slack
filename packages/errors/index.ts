@@ -7,71 +7,75 @@ export type AppErrorCode =
   | "CONFLICT";
 
 /**
+ * Consumers augment this interface with translation keys and required metadata shapes.
+ *
+ * Example:
+ * declare module "@mini-slack/errors" {
+ *   interface AppErrorTranslationKeyMap {
+ *     "channels.members.not_found": { channelId: string };
+ *   }
+ * }
+ */
+export interface AppErrorTranslationKeyMap {}
+
+export type AppErrorTranslationKey =
+  keyof AppErrorTranslationKeyMap extends never
+    ? string
+    : keyof AppErrorTranslationKeyMap;
+
+export type AppErrorOptions = keyof AppErrorTranslationKeyMap extends never
+  ? {
+      metadata?: Record<string, unknown>;
+      i18nKey?: string;
+    }
+  : {
+      [K in keyof AppErrorTranslationKeyMap]: AppErrorTranslationKeyMap[K] extends never
+        ? { i18nKey: K; metadata?: never }
+        : { i18nKey: K; metadata: AppErrorTranslationKeyMap[K] };
+    }[keyof AppErrorTranslationKeyMap];
+
+/**
  * Base class for all application errors.
  */
 export class AppError extends Error {
   readonly code: AppErrorCode;
-  readonly metadata?: Record<string, unknown>;
+  readonly i18nKey?: AppErrorTranslationKey;
+  readonly data?: Record<string, unknown>;
 
-  constructor(
-    message: string,
-    code: AppErrorCode = "INTERNAL",
-    metadata?: Record<string, unknown>,
-  ) {
-    super(message);
-    this.name = this.constructor.name;
+  constructor(code: AppErrorCode, options: AppErrorOptions = {}) {
+    super();
     this.code = code;
-    this.metadata = metadata;
+    this.i18nKey = options.i18nKey;
+    this.data = options.metadata;
   }
 }
 
-/**
- * Thrown when a resource is not found (404).
- */
 export class NotFoundError extends AppError {
-  constructor(
-    message = "Resource not found",
-    metadata?: Record<string, unknown>,
-  ) {
-    super(message, "NOT_FOUND", metadata);
+  constructor(options?: AppErrorOptions) {
+    super("NOT_FOUND", options);
   }
 }
 
-/**
- * Thrown when validation fails (400).
- */
 export class ValidationError extends AppError {
-  constructor(
-    message = "Validation failed",
-    metadata?: Record<string, unknown>,
-  ) {
-    super(message, "VALIDATION", metadata);
+  constructor(options?: AppErrorOptions) {
+    super("VALIDATION", options);
   }
 }
 
-/**
- * Thrown when authentication is required (401).
- */
-export class UnauthorizedError extends AppError {
-  constructor(message = "Unauthorized", metadata?: Record<string, unknown>) {
-    super(message, "UNAUTHENTICATED", metadata);
+export class UnauthenticatedError extends AppError {
+  constructor(options?: AppErrorOptions) {
+    super("UNAUTHENTICATED", options);
   }
 }
 
-/**
- * Thrown when a user doesn't have permission (403).
- */
 export class ForbiddenError extends AppError {
-  constructor(message = "Forbidden", metadata?: Record<string, unknown>) {
-    super(message, "FORBIDDEN", metadata);
+  constructor(options?: AppErrorOptions) {
+    super("FORBIDDEN", options);
   }
 }
 
-/**
- * Thrown when a conflict occurs (409).
- */
 export class ConflictError extends AppError {
-  constructor(message = "Conflict", metadata?: Record<string, unknown>) {
-    super(message, "CONFLICT", metadata);
+  constructor(options?: AppErrorOptions) {
+    super("CONFLICT", options);
   }
 }
