@@ -1,7 +1,0 @@
-{
-  "name": "@mini-slack/config",
-  "version": "1.0.0",
-  "description": "Shared configuration schemas and loaders",
-  "type": "module",
-  "main": "index.ts"
-}

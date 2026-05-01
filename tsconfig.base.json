@@ -3,10 +3,10 @@
     /* Project Options */
     "incremental": true,
     "paths": {
-      "@mini-slack/config/*": ["./packages/config/*"],
       "@mini-slack/db/*": ["./packages/db/*"],
-      "@mini-slack/events/*": ["./packages/events/*"],
       "@mini-slack/errors/*": ["./packages/errors/*"],
+      "@mini-slack/events/*": ["./packages/events/*"],
+      "@mini-slack/i18n/*": ["./packages/i18n/*"],
       "@mini-slack/id-gen/*": ["./packages/id-gen/*"],
       "@mini-slack/logger/*": ["./packages/logger/*"]
     },
