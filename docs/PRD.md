@@ -87,6 +87,7 @@ The system follows a **6-Tier Distributed Architecture** but starts as a **Modul
 - **Real-time**: Node.js + `ws` library (Isolated Service).
 - **Database**: PostgreSQL (Primary Store) + Redis (Cache/Streams).
 - **ORM**: Drizzle.
+- **RPC**: [oRPC](https://orpc.unnoq.com/) — type-safe RPC framework.
 - **File Storage**: S3-compatible object storage.
 
 ## 6. Interaction Flows & API Contract
@@ -119,57 +120,74 @@ The system decouples Identity (Who you are) from Context (Where you are).
 
 ### 6.3 Real-time Messaging Flow
 
-1.  **Send**: Client sends message via `POST /api/workspaces/:wsId/channels/:id/messages`.
-2.  **Process**: API validates, saves to DB, and writes an event to the **Transactional Outbox** in the same transaction.
+1.  **Send**: Client calls `messages.create` via the oRPC client.
+2.  **Process**: RPC handler validates, saves to DB, and writes an event to the **Transactional Outbox** in the same transaction.
 3.  **Publish**: The **Messaging Outbox Worker** picks up the event and publishes it to the **Event Bus**.
 4.  **Broadcast**: The **WebSocket Service** consumes the event and broadcasts the payload to connected clients subscribed to that channel.
 5.  **Receive**: Clients receive the message via WebSocket and update the UI.
 
 ### 6.4 Mutations (Write Operations)
 
-All mutations use standard REST semantics via `fetch`.
+All mutations use the type-safe oRPC client. The client is created once and shared across the app.
 
 ```typescript
 // Example: Sending a message.
 async function sendMessage(content: string) {
-  const res = await fetch(`/api/workspaces/${wsId}/channels/${id}/messages`, {
-    method: "POST",
-    body: JSON.stringify({ content }),
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`, // Identity
-      "X-Workspace-ID": wsId, // Context
-    },
+  return client.messages.create({
+    channelId,
+    content,
   });
-  return res.json();
 }
 ```
 
+The oRPC client handles serialization, the `Authorization` header (JWT), and the `X-Workspace-ID` context header automatically via the configured `RPCLink`.
+
 ### 6.5 Server API (Public Contract)
 
-| Method   | Endpoint                                                    | Description                               |
-| -------- | ----------------------------------------------------------- | ----------------------------------------- |
-| `GET`    | `/.well-known/jwks.json`                                    | Public keys for JWT verification (by WSS) |
-| `POST`   | `/api/auth/signin`                                          | Authenticate and set HttpOnly cookies     |
-| `POST`   | `/api/auth/signout`                                         | Clear auth cookies                        |
-| `POST`   | `/api/auth/refresh`                                         | Issue new access token                    |
-| `GET`    | `/api/user/profile`                                         | Get current user profile                  |
-| `PATCH`  | `/api/user/profile`                                         | Update user profile                       |
-| `GET`    | `/api/workspaces`                                           | List user's workspaces                    |
-| `POST`   | `/api/workspaces`                                           | Create workspace                          |
-| `PATCH`  | `/api/workspaces/:wsId`                                     | Update workspace                          |
-| `GET`    | `/api/workspaces/:wsId/channels`                            | List channels in workspace                |
-| `POST`   | `/api/workspaces/:wsId/channels`                            | Create channel                            |
-| `GET`    | `/api/workspaces/:wsId/channels/:channelId`                 | Get channel details                       |
-| `PATCH`  | `/api/workspaces/:wsId/channels/:channelId`                 | Update channel                            |
-| `DELETE` | `/api/workspaces/:wsId/channels/:channelId`                 | Delete channel                            |
-| `POST`   | `/api/workspaces/:wsId/channels/:channelId/members`         | Add member to channel                     |
-| `DELETE` | `/api/workspaces/:wsId/channels/:channelId/members/:userId` | Remove member from channel                |
-| `GET`    | `/api/workspaces/:wsId/channels/:channelId/messages`        | List messages (paginated)                 |
-| `POST`   | `/api/workspaces/:wsId/channels/:channelId/messages`        | Send message                              |
-| `POST`   | `/api/workspaces/:wsId/files/upload-url`                    | Get S3 presigned upload URL               |
-| `POST`   | `/api/workspaces/:wsId/invitations`                         | Create invitation (link/email)            |
-| `GET`    | `/api/workspaces/:wsId/search`                              | Search messages                           |
+The application exposes two API surfaces:
+
+**Auth endpoints** (handled by Better Auth, standard HTTP):
+
+| Method | Endpoint                   | Description                               |
+| ------ | -------------------------- | ----------------------------------------- |
+| `GET`  | `/.well-known/jwks.json`   | Public keys for JWT verification (by WSS) |
+| `POST` | `/api/auth/signin`         | Authenticate and set HttpOnly cookies     |
+| `POST` | `/api/auth/signout`        | Clear auth cookies                        |
+| `POST` | `/api/auth/refresh`        | Issue new access token                    |
+
+**RPC procedures** (handled by oRPC at `/api/rpc`, all require authentication):
+
+| Procedure                              | Description                               |
+| -------------------------------------- | ----------------------------------------- |
+| `workspaces.list`                      | List user's workspaces                    |
+| `workspaces.get`                       | Get workspace details                     |
+| `workspaces.create`                    | Create workspace                          |
+| `workspaces.update`                    | Update workspace                          |
+| `workspaces.delete`                    | Delete workspace                          |
+| `workspaces.members.list`              | List workspace members                    |
+| `workspaces.members.get`               | Get workspace member                      |
+| `workspaces.members.updateRole`        | Update workspace member role              |
+| `workspaces.members.updateProfile`     | Update workspace member profile           |
+| `workspaces.members.remove`            | Remove workspace member                   |
+| `workspaces.invitations.list`          | List workspace invitations                |
+| `workspaces.invitations.create`        | Create invitation (link/email)            |
+| `workspaces.invitations.accept`        | Accept workspace invitation               |
+| `workspaces.invitations.revoke`        | Revoke workspace invitation               |
+| `channels.list`                        | List channels in workspace                |
+| `channels.get`                         | Get channel details                       |
+| `channels.create`                      | Create channel                            |
+| `channels.update`                      | Update channel                            |
+| `channels.delete`                      | Delete channel                            |
+| `channels.members.list`                | List channel members                      |
+| `channels.members.get`                 | Get channel member                        |
+| `channels.members.add`                 | Add member to channel                     |
+| `channels.members.updateRole`          | Update channel member role                |
+| `channels.members.updateLastSeen`      | Update last seen message for member       |
+| `channels.members.remove`              | Remove member from channel                |
+| `messages.list`                        | List messages (paginated)                 |
+| `messages.create`                      | Send message                              |
+| `messages.update`                      | Edit message                              |
+| `messages.delete`                      | Delete message                            |
 
 ## 7. Capacity Estimation & Growth
 

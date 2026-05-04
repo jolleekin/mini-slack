@@ -41,14 +41,14 @@ This document describes the **target-state architecture** for MiniSlack at full 
 
 The entry point for all user interactions.
 
-- **Web Client**: Next.js 16+ Monolith (Landing, App interface, Auth)
+- **Web Client**: Next.js 16+ Monolith (Landing, App interface, Auth). Uses a type-safe [oRPC](https://orpc.unnoq.com/) client for all domain operations.
 - **Mobile Clients**: Future consideration (React Native)
 
 ### Tier 2: Edge / Gateway Layer
 
 Handles routing, rate limiting, and authentication.
 
-- **API Gateway**: Routes requests to appropriate services
+- **API Gateway**: Routes requests to appropriate services. In Phase 1, oRPC procedures are served at `/api/rpc` within the Next.js monolith.
 - **WebSocket Gateway**: Live event broadcasting
 
 ### Tier 3: Service Layer

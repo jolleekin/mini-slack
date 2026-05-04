@@ -22,10 +22,14 @@ partitioning all data by `workspace_id`.
 - [4. Task Breakdown](#4-task-breakdown)
   - [Milestone 1: Foundation](#milestone-1-foundation)
   - [Milestone 2: Database & Domain Logic](#milestone-2-database--domain-logic)
-  - [Milestone 3: Next.js Application](#milestone-3-nextjs-application)
-  - [Milestone 4: Real-time Infrastructure](#milestone-4-real-time-infrastructure)
-  - [Milestone 5: Search & Polish](#milestone-5-search--polish)
-  - [Milestone 6: Observability & Monitoring](#milestone-6-observability--monitoring)
+  - [Milestone 3: Auth Slice](#milestone-3-auth-slice)
+  - [Milestone 4: Workspace & Channel Slice](#milestone-4-workspace--channel-slice)
+  - [Milestone 5: Messaging Slice](#milestone-5-messaging-slice)
+  - [Milestone 6: Real-time Slice](#milestone-6-real-time-slice)
+  - [Milestone 7: File Sharing Slice](#milestone-7-file-sharing-slice)
+  - [Milestone 8: Search Slice](#milestone-8-search-slice)
+  - [Milestone 9: Polish & Production Readiness](#milestone-9-polish--production-readiness)
+  - [Milestone 10: Observability & Monitoring](#milestone-10-observability--monitoring)
 - [5. Verification Plan](#5-verification-plan)
 - [6. Related Documents](#6-related-documents)
 
@@ -33,7 +37,8 @@ partitioning all data by `workspace_id`.
 
 | Layer         | Technology                                                              | Purpose                                            |
 | ------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
-| **Framework** | [Next.js 16+](https://nextjs.org/)                                      | Full-stack Monolith (Landing Page + APP UI + API)  |
+| **Framework** | [Next.js 16+](https://nextjs.org/)                                      | Full-stack Monolith (Landing Page + APP UI + RPC)  |
+| **RPC**       | [oRPC](https://orpc.unnoq.com/)                                         | Type-safe RPC framework (replaces REST endpoints)  |
 | **Styling**   | [TailwindCSS 4](https://tailwindcss.com/)                               | Utility-first CSS                                  |
 | **Real-time** | [Node.js](https://nodejs.org/) + [ws](https://github.com/websockets/ws) | Live event broadcasting                            |
 | **Database**  | [PostgreSQL](https://www.postgresql.org/)                               | Primary data store                                 |
@@ -48,18 +53,21 @@ partitioning all data by `workspace_id`.
 
 ```bash
 ├── apps/
-│   └── web/                  # Next.js Monolith (Landing, App, API)
+│   └── web/                  # Next.js Monolith (Landing, App, RPC)
 │       ├── app/              # App Router
 │       │   ├── (landing)/    # / (Landing)
 │       │   ├── (auth)/       # /login, /signin, /signup
 │       │   ├── (app)/        # /workspaces, /channels (No Server Actions)
-│       │   └── api/          # REST API endpoints
+│       │   └── api/
+│       │       ├── auth/     # Better Auth handler (/api/auth/[...all])
+│       │       └── rpc/      # oRPC handler (/api/rpc/[[...route]])
 │       ├── components/       # Shared UI components
 │       ├── lib/              # Feature-First Core
 │       │   ├── identity/     # Service, types, schemas
 │       │   ├── messaging/    # Message/Channel logic
 │       │   ├── files/        # S3 orchestration
 │       │   ├── search/       # Logic for full-text search
+│       │   ├── rpc/          # oRPC routers & type-safe client
 │       │   └── common/       # DB client, core utils
 │       └── middleware.ts     # Auth token verification and rotation logic
 ├── services/
@@ -385,106 +393,185 @@ organization({
   - Add outbox table to schema
   - Create `publishEvent()` helper that writes to outbox in same transaction
 
-- [ ] **2.3 Feature Logic (Core Services)**
-  - `lib/identity`: User CRUD, profile updates, session revocation logic
+- [x] **2.3 Feature Logic (Core Services)**
+  - `lib/identity`: Auth via Better Auth (Magic Link + GitHub OAuth), session management
   - `lib/messaging`: Workspace, Channel, Message, and Reaction business logic
-  - `lib/files`: Direct-to-S3 orchestration and attachment state updates
-  - `lib/search`: Full-text search orchestration
+  - `lib/rpc`: oRPC routers for all procedures (workspaces, channels, messages, members, invitations)
 
-### Milestone 3: Next.js Application
+### Milestone 3: Auth Slice
 
-- [ ] **3.1 App Router Setup**
-  - Landing page (`/`)
-  - Signin/Signup pages (`/signin`, `/signup`)
-  - Shared layout with auth check
-  - Auth middleware for token rotation
+**Goal**: A user can sign in and be redirected to the correct destination.
 
-- [ ] **3.2 Custom Auth & Account API**
-  - Signin endpoint (`POST /api/auth/signin`)
-  - Profile Update endpoint (`PATCH /api/user/profile`)
-  - Cookie management (JWT + Refresh with `SameSite=Lax`)
-  - JWKS endpoint (`/.well-known/jwks.json`)
+- [ ] **3.1 App Router Shell**
+  - Root layout with font and global styles
+  - Route groups: `(landing)`, `(auth)`, `(app)`
+  - Auth middleware (`middleware.ts`) for JWT verification and token rotation
+  - Redirect logic: new user → `/welcome`, returning user → last active workspace
 
-- [ ] **3.3 Workspace & Channel UI**
-  - Workspace picker/creation flow
-  - Sidebar with channel list (workspace-scoped, fetching from API)
-  - Channel creation via API
-  - Channel detail view with messages
+- [ ] **3.2 Landing Page**
+  - `/` — marketing/landing page with sign-in CTA
 
-- [ ] **3.4 Messaging & UI**
-  - Message list with infinite scroll
-  - Message input (POST to API)
-  - File attachment support (S3 Direct Upload via API)
-  - Emoji reaction picker
-  - Unread count badges
+- [ ] **3.3 Auth Pages**
+  - `/signin` — Magic Link + GitHub OAuth sign-in form
+  - `/welcome` — post-auth onboarding: create workspace or join by slug
 
-### Milestone 4: Real-time Infrastructure
+- [ ] **3.4 Auth API**
+  - JWKS endpoint (`GET /.well-known/jwks.json`) for WSS JWT verification
+  - Cookie management (JWT in memory + Refresh Token as `HttpOnly; SameSite=Lax` cookie)
 
-- [ ] **4.1 Messaging Outbox Worker**
+**Deliverable**: User can sign in via Magic Link or GitHub, land on `/welcome` or their last workspace.
+
+### Milestone 4: Workspace & Channel Slice
+
+**Goal**: A signed-in user can create/join workspaces and browse channels.
+
+- [ ] **4.1 Workspace UI**
+  - `/workspaces` — workspace list/picker
+  - Create workspace form (name + slug + default channel name)
+  - Join workspace by slug
+  - Workspace switcher in sidebar
+
+- [ ] **4.2 App Shell**
+  - Persistent sidebar layout for `(app)` routes
+  - Workspace context: store `active_workspace_id` in `localStorage`, send `X-Workspace-ID` header on all RPC calls
+  - Channel list in sidebar (public + joined private channels)
+
+- [ ] **4.3 Channel UI**
+  - Create channel modal (name + type)
+  - Channel detail view shell (empty message area)
+  - Channel settings (rename, delete) for owners/admins
+
+**Deliverable**: User can create a workspace, see channels in the sidebar, and open a channel view.
+
+### Milestone 5: Messaging Slice
+
+**Goal**: Users can send and read messages in channels.
+
+- [ ] **5.1 Message List**
+  - Paginated message list with infinite scroll (cursor-based, `before` param)
+  - Message bubbles with author name, avatar, and timestamp
+  - System messages (e.g., channel renamed)
+
+- [ ] **5.2 Message Input**
+  - Rich text input (or plain text with markdown preview)
+  - Send via `messages.create` RPC
+  - Optimistic UI: message appears immediately, confirmed on response
+
+- [ ] **5.3 Reactions**
+  - Emoji reaction picker on hover
+  - Reaction counts displayed on messages
+
+- [ ] **5.4 Unread Badges**
+  - Unread count per channel in sidebar
+  - Mark as read via `channels.members.updateLastSeen` on channel open
+
+**Deliverable**: Users can have a full text conversation in a channel.
+
+### Milestone 6: Real-time Slice
+
+**Goal**: Messages appear instantly for all channel members without a page refresh.
+
+- [ ] **6.1 Messaging Outbox Worker** (`workers/messaging-outbox`)
   - Polling loop (100ms interval)
-  - Batch processing (10 events)
+  - Batch processing (up to 10 events per tick)
   - Publish to Redis Streams
-  - Mark as published
+  - Mark events as published
 
-- [ ] **4.2 WebSocket Service**
-  - JWT authentication via cookies
-  - JWKS verification logic
-  - Redis Streams consumer
-  - Broadcast to channel members
+- [ ] **6.2 WebSocket Service** (`services/wss`)
+  - JWT authentication via JWKS endpoint
+  - Redis Streams consumer (subscribe to channel events)
+  - Broadcast to connected clients subscribed to that channel
 
-- [ ] **4.3 File Cleanup Worker**
-  - Identify orphaned uploads (PENDING > 24h)
-  - Delete from S3/Object Storage
-  - Mark as DELETED in DB
+- [ ] **6.3 Client Integration**
+  - WebSocket hook in React (connect on workspace load)
+  - Handle `message.created`, `message.updated`, `message.deleted` events
+  - Reconnection logic with exponential backoff
+  - Replace optimistic message with confirmed server message on receipt
 
-- [ ] **4.4 Client Integration**
-  - WebSocket hook in React
-  - Optimistic UI updates
-  - Reconnection logic
+**Deliverable**: Messages, edits, and deletes propagate in real-time to all active channel members.
 
-### Milestone 5: Search & Polish
+### Milestone 7: File Sharing Slice
 
-- [ ] **5.1 Postgres Full-Text Search**
-  - GIN index on messages.content
-  - Search API endpoint
-  - Search UI with results
+**Goal**: Users can attach files to messages.
 
-- [ ] **5.2 Production Readiness**
-  - Error boundaries
-  - Loading states
-  - Mobile responsive layout
+- [ ] **7.1 File Service** (`lib/files`)
+  - Direct-to-S3 presigned URL generation RPC (`files.getUploadUrl`)
+  - Attachment state transition: `temporary` → `in_use` on message send
+  - File metadata stored in `files` table; join via `message_files`
 
-### Milestone 6: Observability & Monitoring
+- [ ] **7.2 File Cleanup Worker** (`workers/file-cleanup`)
+  - Identify orphaned uploads (`temporary` status > 24h)
+  - Delete from S3/object storage
+  - Mark as `deleted` in DB
 
-- [ ] **6.1 Structured Logging Setup**
+- [ ] **7.3 File UI**
+  - File attachment button in message input
+  - Upload progress indicator
+  - Inline image preview in message list
+  - Download link for non-image files
+
+**Deliverable**: Users can attach and view images and files in messages.
+
+### Milestone 8: Search Slice
+
+**Goal**: Users can search messages within a workspace.
+
+- [ ] **8.1 Search Service** (`lib/search`)
+  - GIN index on `messages.plain_text`
+  - `search.messages` RPC procedure (workspace-scoped, paginated)
+
+- [ ] **8.2 Search UI**
+  - Search bar in sidebar header
+  - Results panel with message excerpts and jump-to-message links
+
+**Deliverable**: Users can search message history within their workspace.
+
+### Milestone 9: Polish & Production Readiness
+
+- [ ] **9.1 Error Handling**
+  - Error boundaries for all major UI sections
+  - Toast notifications for RPC errors
+  - Empty states (no workspaces, no channels, no messages)
+
+- [ ] **9.2 Loading States**
+  - Skeleton loaders for message list, channel list, workspace list
+  - Suspense boundaries in App Router layouts
+
+- [ ] **9.3 Mobile Layout**
+  - Responsive sidebar (collapsible on small screens)
+  - Touch-friendly message input and reaction picker
+
+### Milestone 10: Observability & Monitoring
+
+- [ ] **10.1 Structured Logging Setup**
   - Integrate Pino logger across all services (apps/web, services/wss, workers)
   - Log key events: API requests, message publishes, worker iterations
   - Include context: `workspace_id`, `user_id`, `trace_id`, `timestamp`
   - Centralize logs to stdout (Docker/K8s compatible)
 
-- [ ] **6.2 Application Metrics**
-  - HTTP endpoint metrics: latency (p50, p95, p99), error rates, request count by route
+- [ ] **10.2 Application Metrics**
+  - HTTP endpoint metrics: latency (p50, p95, p99), error rates, request count by RPC procedure
   - Database metrics: query count, query latency, connection pool usage
   - WebSocket metrics: connection count, active subscriptions, message throughput, delivery latency
   - Worker metrics: queue depth, processing time, error rate per worker
   - Blob Store metrics: file upload throughput (MB/s), error rates
   - Install `@opentelemetry/api` and `@opentelemetry/auto` (or instrument manually with Prometheus client)
 
-- [ ] **6.3 Health Checks & Alerts**
+- [ ] **10.3 Health Checks & Alerts**
   - HTTP endpoint: `GET /api/health` (returns JSON with service status, DB connection, Redis connection)
   - Periodic background check: Alert if outbox publishes are lagging (> 1 second)
   - Database slow query log: Alert on queries > 500ms
 
-- [ ] **6.4 Monitoring Dashboard (Local)**
+- [ ] **10.4 Monitoring Dashboard (Local)**
   - Use Prometheus + Grafana in `docker-compose.yml`
   - Key dashboards:
-    - **API Performance**: Request latency, error rate, throughput by endpoint
+    - **API Performance**: Request latency, error rate, throughput by RPC procedure
     - **Database Health**: Query latency, connection pool, disk usage
     - **Real-time Health**: Active WebSocket connections, message delivery rate
     - **Worker Health**: Outbox queue depth, file cleanup iterations
   - Export graphs for decision-making (DAU milestones at 25K, 50K, 75K, 100K)
 
-- [ ] **6.5 Business Metrics**
+- [ ] **10.5 Business Metrics**
   - Track: DAU, WAU, MAU (from auth logs)
   - Track: Messages/sec, Channels/workspace, File uploads/day
   - Track: P95 message delivery latency
