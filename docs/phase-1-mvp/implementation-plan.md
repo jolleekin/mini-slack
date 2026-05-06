@@ -69,7 +69,7 @@ partitioning all data by `workspace_id`.
 │       │   ├── search/       # Logic for full-text search
 │       │   ├── rpc/          # oRPC routers & type-safe client
 │       │   └── common/       # DB client, core utils
-│       └── middleware.ts     # Auth token verification and rotation logic
+│       └── proxy.ts          # Auth token verification and rotation logic
 ├── services/
 │   └── wss/                  # Isolated WebSocket Service
 │       ├── src/
@@ -405,7 +405,7 @@ organization({
 - [ ] **3.1 App Router Shell**
   - Root layout with font and global styles
   - Route groups: `(landing)`, `(auth)`, `(app)`
-  - Auth middleware (`middleware.ts`) for JWT verification and token rotation
+  - Auth middleware (`proxy.ts`) for JWT verification and token  ion
   - Redirect logic: new user → `/welcome`, returning user → last active workspace
 
 - [ ] **3.2 Landing Page**
