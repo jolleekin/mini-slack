@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const components = [
+  { name: "Button", href: "/components/button" },
   { name: "Spinner", href: "/components/spinner" },
 ];
 
