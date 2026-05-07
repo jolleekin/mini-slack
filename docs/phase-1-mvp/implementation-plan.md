@@ -402,13 +402,13 @@ organization({
 
 **Goal**: A user can sign in and be redirected to the correct destination.
 
-- [ ] **3.1 App Router Shell**
+- [x] **3.1 App Router Shell**
   - Root layout with font and global styles
   - Route groups: `(landing)`, `(auth)`, `(app)`
   - Auth middleware (`proxy.ts`) for JWT verification and token  ion
   - Redirect logic: new user → `/welcome`, returning user → last active workspace
 
-- [ ] **3.2 Landing Page**
+- [x] **3.2 Landing Page**
   - `/` — marketing/landing page with sign-in CTA
 
 - [ ] **3.3 Auth Pages**
