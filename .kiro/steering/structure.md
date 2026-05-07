@@ -116,10 +116,22 @@ All mutations that produce domain events must call `publishEvent()` inside the s
 All RPC inputs are Zod schemas defined in the domain's `types.ts` and passed to `.input()` on the procedure. No raw unvalidated input reaches service functions.
 
 ### Testing
-- **Service tests**: Use `createTestDb()` (PGlite) — test real SQL, no mocks
-- **Router tests**: Use `getRpcClient()` + `mockSession()` — test the full HTTP handler stack
-- **Property tests**: Use `fast-check` for invariant/property-based coverage
-- Test files mirror source paths: `lib/messaging/workspaces/service.ts` → `tests/workspaces/service.test.ts`
+
+**Co-located tests** (live next to the source file):
+- **Unit tests** — `component.test.tsx` beside `component.tsx`
+- **Property-based tests** — `component.property.test.tsx` beside `component.tsx`
+- Use these for pure functions and UI components that have no dependency on shared test infrastructure
+
+**`tests/` directory** (mirrors `lib/` structure, e.g. `lib/messaging/workspaces/service.ts` → `tests/workspaces/service.test.ts`):
+- **Service tests** — use `createTestDb()` (PGlite) to test real SQL, no mocks
+- **Router tests** — use `getRpcClient()` + `mockSession()` to test the full HTTP handler stack
+- **Cross-cutting tests** — concerns with no single source module to co-locate with (e.g. `tests/proxy/`, `tests/identity/`)
+- Use these whenever the test depends on shared helpers in `tests/helpers/`
+
+**`tests/helpers/`**:
+- `db.ts` — `createTestDb()` (PGlite in-memory DB with migrations)
+- `router-test.ts` — `getRpcClient()`, `mockSession()` for router tests
+- `server-only-mock.ts` — mock for `server-only` imports
 
 ### Package Imports
 Internal packages use the `@mini-slack/*` scope (e.g. `@mini-slack/db`, `@mini-slack/errors`). Within `apps/web`, use the `@/` alias for local imports.
