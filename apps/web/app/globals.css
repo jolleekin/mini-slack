@@ -222,7 +222,7 @@
   --color-accent-a10: var(--purple-a10);
   --color-accent-a11: var(--purple-a11);
   --color-accent-a12: var(--purple-a12);
-
+  
   /* success → green */
   --color-success-1: var(--green-1);
   --color-success-2: var(--green-2);
@@ -300,5 +300,104 @@
   --color-warning-a10: var(--orange-a10);
   --color-warning-a11: var(--orange-a11);
   --color-warning-a12: var(--orange-a12);
+
+  /* ── Contrast colors  ─────────────────────────────────────────────────────── */
+  --color-accent-contrast: white;
+  --color-success-contrast: white;
+  --color-danger-contrast: white;
+  --color-warning-contrast: white;
+  
+  /* ── Semantic stroke widths ───────────────────────────────────────────────── */
+  --stroke-width-thin: 1px;
+  --stroke-width-thick: 2px;
+  --stroke-width-thicker: 3px;
+  --stroke-width-thickest: 4px;
+}
+
+/* ── Utility: Fluent focus ring ─────────────────────────────────────────── */
+@utility fluent-focus-ring {
+  outline: none;
+  &:focus-visible {
+    outline: 2px solid var(--color-accent-8);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Spinner ────────────────────────────────────────────────────────────── */
+/*
+ * Ported from Fluent UI's Spinner. Uses CSS masking + conic-gradient instead
+ * of SVG stroke-dasharray — all rotation-based, no discrete interpolation,
+ * no jump possible.
+ *
+ * .spinner-ring  — solid circle masked into a ring via radial-gradient mask;
+ *                  rotates at constant speed. --spinner-sw sets stroke width.
+ * .spinner-tail  — conic-gradient arc behind a 105° mask; ::before/::after
+ *                  rotate independently to grow/shrink the visible arc.
+ */
+
+@keyframes spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+@keyframes spinner-tail {
+  0%   { transform: rotate(-135deg); }
+  50%  { transform: rotate(0deg); }
+  100% { transform: rotate(225deg); }
+}
+@keyframes spinner-tail-before {
+  0%   { transform: rotate(0deg); }
+  50%  { transform: rotate(105deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes spinner-tail-after {
+  0%   { transform: rotate(0deg); }
+  50%  { transform: rotate(225deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.spinner-tail {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: conic-gradient(transparent 105deg, white 105deg);
+  mask-image: conic-gradient(transparent 105deg, white 105deg);
+  animation: spinner-tail 1.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+.spinner-tail::before,
+.spinner-tail::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: conic-gradient(currentColor 135deg, transparent 135deg);
+  animation-duration: 1.5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}
+
+.spinner-tail::before {
+  animation-name: spinner-tail-before;
+}
+
+.spinner-tail::after {
+  animation-name: spinner-tail-after;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner-ring {
+    animation-duration: 3s;
+  }
+  .spinner-tail {
+    animation-iteration-count: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+    background-image: conic-gradient(transparent 120deg, currentColor 360deg);
+  }
+  .spinner-tail::before,
+  .spinner-tail::after {
+    content: none;
+  }
 }
 
