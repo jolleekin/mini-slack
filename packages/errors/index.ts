@@ -42,11 +42,11 @@ export class AppError extends Error {
   readonly i18nKey?: AppErrorTranslationKey;
   readonly data?: Record<string, unknown>;
 
-  constructor(code: AppErrorCode, options: AppErrorOptions = {}) {
+  constructor(code: AppErrorCode, options?: AppErrorOptions) {
     super();
     this.code = code;
-    this.i18nKey = options.i18nKey;
-    this.data = options.metadata;
+    this.i18nKey = options?.i18nKey;
+    this.data = options?.metadata;
   }
 }
 
