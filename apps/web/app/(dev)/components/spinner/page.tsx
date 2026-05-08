@@ -1,4 +1,4 @@
-import { Spinner } from "@/components/ui/spinner.tsx";
+import { Spinner } from "@/components/ui/spinner/spinner.tsx";
 
 // ── Section wrapper ────────────────────────────────────────────────────────
 

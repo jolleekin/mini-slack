@@ -1,0 +1,23 @@
+@theme inline {
+  /* Shadow color tokens */
+  --color-neutral-shadow-ambient: rgba(0, 0, 0, 0.12);
+  --color-neutral-shadow-key: rgba(0, 0, 0, 0.14);
+  --color-brand-shadow-ambient: rgba(115, 70, 255, 0.12);
+  --color-brand-shadow-key: rgba(115, 70, 255, 0.14);
+
+  /* Neutral elevation shadows */
+  --shadow-2: 0 1px 2px var(--color-neutral-shadow-ambient), 0 0 2px var(--color-neutral-shadow-key);
+  --shadow-4: 0 2px 4px var(--color-neutral-shadow-ambient), 0 0 2px var(--color-neutral-shadow-key);
+  --shadow-8: 0 4px 8px var(--color-neutral-shadow-ambient), 0 0 2px var(--color-neutral-shadow-key);
+  --shadow-16: 0 8px 16px var(--color-neutral-shadow-ambient), 0 0 2px var(--color-neutral-shadow-key);
+  --shadow-28: 0 14px 28px var(--color-neutral-shadow-ambient), 0 0 8px var(--color-neutral-shadow-key);
+  --shadow-64: 0 32px 64px var(--color-neutral-shadow-ambient), 0 0 8px var(--color-neutral-shadow-key);
+
+  /* Brand elevation shadows */
+  --shadow-2-brand: 0 1px 2px var(--color-brand-shadow-ambient), 0 0 2px var(--color-brand-shadow-key);
+  --shadow-4-brand: 0 2px 4px var(--color-brand-shadow-ambient), 0 0 2px var(--color-brand-shadow-key);
+  --shadow-8-brand: 0 4px 8px var(--color-brand-shadow-ambient), 0 0 2px var(--color-brand-shadow-key);
+  --shadow-16-brand: 0 8px 16px var(--color-brand-shadow-ambient), 0 0 2px var(--color-brand-shadow-key);
+  --shadow-28-brand: 0 14px 28px var(--color-brand-shadow-ambient), 0 0 8px var(--color-brand-shadow-key);
+  --shadow-64-brand: 0 32px 64px var(--color-brand-shadow-ambient), 0 0 8px var(--color-brand-shadow-key);
+}

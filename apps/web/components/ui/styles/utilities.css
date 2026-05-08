@@ -1,0 +1,8 @@
+/* Utility: Fluent focus ring */
+@utility fluent-focus-ring {
+  outline: none;
+  &:focus-visible {
+    outline: 2px solid var(--color-accent-8);
+    outline-offset: 2px;
+  }
+}
