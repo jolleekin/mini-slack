@@ -118,9 +118,12 @@ All RPC inputs are Zod schemas defined in the domain's `types.ts` and passed to 
 ### Testing
 
 **Co-located tests** (live next to the source file):
-- **Unit tests** — `component.test.tsx` beside `component.tsx`
+- **Unit tests** — `component.test.tsx` beside `component.tsx`, `page.test.tsx` beside `page.tsx`
 - **Property-based tests** — `component.property.test.tsx` beside `component.tsx`
-- Use these for pure functions and UI components that have no dependency on shared test infrastructure
+- Use these for:
+  - Pure functions and UI components
+  - Page components and their route-specific components (e.g., `app/(landing)/page.tsx` and `app/(landing)/components/*.tsx`)
+  - Any tests that don't depend on shared test infrastructure
 
 **`tests/` directory** (mirrors `lib/` structure, e.g. `lib/messaging/workspaces/service.ts` → `tests/workspaces/service.test.ts`):
 - **Service tests** — use `createTestDb()` (PGlite) to test real SQL, no mocks
@@ -132,6 +135,11 @@ All RPC inputs are Zod schemas defined in the domain's `types.ts` and passed to 
 - `db.ts` — `createTestDb()` (PGlite in-memory DB with migrations)
 - `router-test.ts` — `getRpcClient()`, `mockSession()` for router tests
 - `server-only-mock.ts` — mock for `server-only` imports
+
+**Testing location decision tree**:
+1. Does the test need `createTestDb()`, `getRpcClient()`, or other helpers from `tests/helpers/`? → Use `tests/` directory
+2. Is it a service or router test? → Use `tests/` directory (mirrors `lib/` structure)
+3. Is it a page, component, or pure function unit test? → Co-locate with the source file
 
 ### Package Imports
 Internal packages use the `@mini-slack/*` scope (e.g. `@mini-slack/db`, `@mini-slack/errors`). Within `apps/web`, use the `@/` alias for local imports.
