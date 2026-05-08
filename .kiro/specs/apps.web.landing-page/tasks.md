@@ -22,7 +22,7 @@ Build the MiniSlack landing page as a set of React Server Components composed in
   - Content width: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 7.1, 7.3_
 
-  - [ ]* 2.1 Write unit tests for `LandingHeader`
+  - [x] 2.1 Write unit tests for `LandingHeader`
     - File: `apps/web/tests/landing/landing-header.test.tsx`
     - Assert a `<header>` element is rendered
     - Assert a `<nav>` element is present
@@ -40,7 +40,7 @@ Build the MiniSlack landing page as a set of React Server Components composed in
   - Include the screenshot placeholder `<div aria-hidden="true">` with mock sidebar and message skeleton rows as specified in the design
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 7.1, 7.2, 7.3_
 
-  - [ ]* 3.1 Write unit tests for `HeroSection`
+  - [x] 3.1 Write unit tests for `HeroSection`
     - File: `apps/web/tests/landing/hero-section.test.tsx`
     - Assert an `<h1>` element is rendered
     - Assert a link with `href="/signin"` is present
@@ -56,7 +56,7 @@ Build the MiniSlack landing page as a set of React Server Components composed in
   - Feature name: `text-lg font-semibold text-gray-12`; description: `text-sm text-gray-11 leading-relaxed`
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 7.1, 7.2_
 
-  - [ ]* 4.1 Write unit tests for `FeaturesSection`
+  - [x] 4.1 Write unit tests for `FeaturesSection`
     - File: `apps/web/tests/landing/features-section.test.tsx`
     - Assert a `<ul>` (or list container) is rendered
     - Assert exactly 3 feature `<li>` items are rendered
@@ -71,7 +71,7 @@ Build the MiniSlack landing page as a set of React Server Components composed in
   - Include a `<Link href="/signin">` styled as a secondary button on violet: `bg-white/10 hover:bg-white/20 text-white text-sm font-semibold` with focus ring classes
   - _Requirements: 4.1, 4.2, 4.3, 7.1, 7.3_
 
-  - [ ]* 5.1 Write unit tests for `CtaSection`
+  - [x] 5.1 Write unit tests for `CtaSection`
     - File: `apps/web/tests/landing/cta-section.test.tsx`
     - Assert an `<h2>` element is rendered
     - Assert a link with `href="/signin"` is present
@@ -85,7 +85,7 @@ Build the MiniSlack landing page as a set of React Server Components composed in
   - Render copyright text: `© {new Date().getFullYear()} MiniSlack` with `text-sm text-gray-11`
   - _Requirements: 5.1, 5.2, 7.1_
 
-  - [ ]* 6.1 Write unit tests for `LandingFooter`
+  - [x] 6.1 Write unit tests for `LandingFooter`
     - File: `apps/web/tests/landing/landing-footer.test.tsx`
     - Assert a `<footer>` element is rendered
     - Assert the rendered text contains the current year (`new Date().getFullYear().toString()`)
@@ -99,7 +99,7 @@ Build the MiniSlack landing page as a set of React Server Components composed in
   - Ensure the page remains a React Server Component (no `"use client"` directive)
   - _Requirements: 6.1, 7.1_
 
-  - [ ]* 7.1 Write unit tests for page metadata
+  - [x] 7.1 Write unit tests for page metadata
     - File: `apps/web/tests/landing/page.test.tsx`
     - Assert `metadata.title === "MiniSlack — Team Messaging"`
     - Assert `metadata.description` is a non-empty string

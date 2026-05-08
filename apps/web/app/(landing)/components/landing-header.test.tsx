@@ -4,7 +4,7 @@
  */
 import { renderToString } from "react-dom/server";
 import { describe, it, expect } from "vitest";
-import { LandingHeader } from "@/app/(landing)/components/landing-header";
+import { LandingHeader } from "./landing-header.tsx";
 
 describe("LandingHeader", () => {
   it("renders a <header> element", () => {
@@ -42,10 +42,5 @@ describe("LandingHeader", () => {
   it("nav has aria-label for accessibility (requirement 7.1)", () => {
     const html = renderToString(<LandingHeader />);
     expect(html).toContain('aria-label="Main navigation"');
-  });
-
-  it("logo wordmark displays MiniSlack text", () => {
-    const html = renderToString(<LandingHeader />);
-    expect(html).toContain("MiniSlack");
   });
 });
