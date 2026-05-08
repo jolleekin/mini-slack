@@ -1,4 +1,4 @@
-import { createTranslator } from "@mini-slack/i18n";
+import { createTranslator } from "@mini-slack/i18n/index.ts";
 import { RPCHandler } from "@orpc/server/fetch";
 import { NextRequest } from "next/server";
 
@@ -7,7 +7,7 @@ import { ServiceContext } from "@/lib/context.ts";
 import { Db, db } from "@/lib/db.ts";
 import { extractLocale, translationsLoaders } from "@/lib/errors/i18n.ts";
 import { auth } from "@/lib/identity/auth.ts";
-import { router } from "@/lib/rpc/routers";
+import { router } from "@/lib/rpc/routers/index.ts";
 
 const rpcHandler = new RPCHandler(router);
 

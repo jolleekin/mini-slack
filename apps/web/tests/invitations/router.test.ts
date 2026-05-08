@@ -13,7 +13,7 @@ import {
   ListWorkspaceInvitationsOutput,
   RevokeWorkspaceInvitationOutput,
 } from "@/lib/messaging/workspaces/invitations/types.ts";
-import { getRpcClient, mockSession } from "@/tests/helpers/router-test";
+import { getRpcClient, mockSession } from "@/tests/helpers/router-test.ts";
 
 vi.mock("@/lib/messaging/workspaces/invitations/service.ts", () => ({
   acceptWorkspaceInvitation: vi.fn(),

@@ -5,7 +5,7 @@
  */
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "./spinner.tsx";
 
 describe("Spinner", () => {
   it('has role="status" for accessibility', () => {

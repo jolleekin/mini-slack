@@ -5,7 +5,7 @@ import { vi } from "vitest";
 import { WORKSPACE_ID_HEADER } from "@/lib/constants.ts";
 import { auth } from "@/lib/identity/auth.ts";
 import { createClient } from "@/lib/rpc/client.ts";
-import { RPCRouter } from "@/lib/rpc/routers";
+import { RPCRouter } from "@/lib/rpc/routers/index.ts";
 
 vi.mock("@/lib/rpc/get-workspace-member-role.ts", () => ({
   getWorkspaceMemberRole: () => "owner",

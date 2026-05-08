@@ -2,7 +2,7 @@ import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
 import { type VariantProps, tv } from "tailwind-variants";
 
-import { Spinner, SpinnerProps } from "@/components/ui/spinner";
+import { Spinner, SpinnerProps } from "@/components/ui/spinner.tsx";
 
 const buttonVariants = tv({
   base: [

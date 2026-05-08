@@ -1,4 +1,4 @@
-import * as schema from "@mini-slack/db";
+import * as schema from "@mini-slack/db/index.ts";
 import { ExtractTablesWithRelations } from "drizzle-orm";
 import { PgDatabase, PgTransaction } from "drizzle-orm/pg-core";
 import { PgliteDatabase, PgliteTransaction } from "drizzle-orm/pglite";

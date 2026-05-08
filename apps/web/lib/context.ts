@@ -3,7 +3,7 @@ import { TranslationKey } from "@mini-slack/i18n/index.ts";
 import { Id } from "@mini-slack/id-gen/index.ts";
 
 import { Db } from "@/lib/db.ts";
-import en from "@/lib/errors/locales/en.json";
+import en from "@/lib/errors/locales/en.json" with { type: "json" };
 
 /**
  * The currently authenticated user.

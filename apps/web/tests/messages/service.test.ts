@@ -13,7 +13,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { WorkspaceServiceContext } from "@/lib/context.ts";
 import { Db } from "@/lib/db.ts";
-import en from "@/lib/errors/locales/en.json";
+import en from "@/lib/errors/locales/en.json" with { type: "json" };
 import {
   createMessage,
   deleteMessage,

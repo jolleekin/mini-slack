@@ -12,7 +12,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { WorkspaceServiceContext } from "@/lib/context.ts";
 import { Db } from "@/lib/db.ts";
-import en from "@/lib/errors/locales/en.json";
+import en from "@/lib/errors/locales/en.json" with { type: "json" };
 import {
   addChannelMember,
   getChannelMember,
@@ -21,7 +21,7 @@ import {
   updateChannelMemberLastSeenMessage,
   updateChannelMemberRole,
 } from "@/lib/messaging/channels/members/service.ts";
-import { createTestDb } from "@/tests/helpers/db";
+import { createTestDb } from "@/tests/helpers/db.ts";
 
 describe("channel members service (PGlite)", () => {
   let db: Db;

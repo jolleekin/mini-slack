@@ -6,21 +6,21 @@ import {
   WorkspaceCreatedEvent,
   WorkspaceDeletedEvent,
   WorkspaceUpdatedEvent,
-} from "@mini-slack/events";
-import { createTranslator } from "@mini-slack/i18n";
+} from "@mini-slack/events/index.ts";
+import { createTranslator } from "@mini-slack/i18n/index.ts";
 import { and, eq } from "drizzle-orm";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { ServiceContext } from "@/lib/context.ts";
 import { Db } from "@/lib/db.ts";
-import en from "@/lib/errors/locales/en.json";
+import en from "@/lib/errors/locales/en.json" with { type: "json" };
 import {
   createWorkspace,
   deleteWorkspace,
   listWorkspaces,
   updateWorkspace,
 } from "@/lib/messaging/workspaces/service.ts";
-import { createTestDb } from "@/tests/helpers/db";
+import { createTestDb } from "@/tests/helpers/db.ts";
 
 describe("workspaces service", () => {
   let db: Db;

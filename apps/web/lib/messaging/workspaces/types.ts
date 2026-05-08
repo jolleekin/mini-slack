@@ -1,4 +1,4 @@
-import * as schema from "@mini-slack/db";
+import * as schema from "@mini-slack/db/index.ts";
 import { z } from "zod";
 
 import {
@@ -7,7 +7,7 @@ import {
   SLUG_REGEX,
 } from "@/lib/messaging/constants.ts";
 
-import { Channel } from "../channels/types";
+import { Channel } from "../channels/types.ts";
 
 export type Workspace = typeof schema.workspaces.$inferSelect;
 

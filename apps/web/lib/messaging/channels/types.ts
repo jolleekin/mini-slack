@@ -1,4 +1,4 @@
-import * as schema from "@mini-slack/db";
+import * as schema from "@mini-slack/db/index.ts";
 import { z } from "zod";
 
 import {

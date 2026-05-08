@@ -12,7 +12,7 @@ import {
   ListWorkspacesOutput,
   UpdateWorkspaceInput,
 } from "@/lib/messaging/workspaces/types.ts";
-import { getRpcClient, mockSession } from "@/tests/helpers/router-test";
+import { getRpcClient, mockSession } from "@/tests/helpers/router-test.ts";
 
 vi.mock("@/lib/messaging/workspaces/service.ts", () => ({
   createWorkspace: vi.fn(),

@@ -10,7 +10,7 @@
 import { render } from "@testing-library/react";
 import { describe, it } from "vitest";
 import * as fc from "fast-check";
-import { Button } from "@/components/ui/button";
+import { Button } from "./button.tsx";
 
 // ── Generators ─────────────────────────────────────────────────────────────
 
