@@ -1,25 +1,6 @@
 import { Button } from "@/components/ui/button/button.tsx";
 
-// ── Section wrapper ────────────────────────────────────────────────────────
-
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-3">
-      <h2 className="text-gray-a11 text-xs font-semibold tracking-widest uppercase">
-        {title}
-      </h2>
-      <div className="flex flex-wrap items-center gap-3">{children}</div>
-    </section>
-  );
-}
-
-// ── Page ───────────────────────────────────────────────────────────────────
+import { Section } from "../section.tsx";
 
 export default function ButtonPage() {
   return (
