@@ -131,6 +131,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
   asChild?: boolean;
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 export function Button({

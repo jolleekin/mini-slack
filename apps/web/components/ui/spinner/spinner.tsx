@@ -1,3 +1,4 @@
+import * as React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
 
 const spinnerVariants = tv({
@@ -51,16 +52,17 @@ type SpinnerVariants = VariantProps<typeof spinnerVariants>;
 
 export interface SpinnerProps extends SpinnerVariants {
   className?: string;
+  ref?: React.Ref<HTMLSpanElement>;
 }
 
-export function Spinner({ size, appearance, className }: SpinnerProps) {
+export function Spinner({ size, appearance, className, ...props }: SpinnerProps) {
   const { root, container, track, arc, tail } = spinnerVariants({ size, appearance });
   const sw = STROKE_WIDTH[size ?? "md"];
 
   const ringMask = `radial-gradient(closest-side, transparent calc(100% - ${sw} - 1px), white calc(100% - ${sw}) calc(100% - 1px), transparent 100%)`;
 
   return (
-    <span role="status" data-spinner className={root({ className })}>
+    <span role="status" data-spinner {...props} className={root({ className })}>
       <span aria-hidden="true" className={container()}>
 
         {/* Track — static faint background ring */}
