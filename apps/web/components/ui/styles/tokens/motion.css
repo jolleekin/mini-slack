@@ -1,22 +1,22 @@
 @theme inline {
   /* Duration tokens */
-  --duration-ultra-fast: 50ms;
-  --duration-faster: 100ms;
-  --duration-fast: 150ms;
-  --duration-normal: 200ms;
-  --duration-gentle: 250ms;
-  --duration-slow: 300ms;
-  --duration-slower: 400ms;
-  --duration-ultra-slow: 500ms;
+  --transition-duration-ultra-fast: 50ms;
+  --transition-duration-faster: 100ms;
+  --transition-duration-fast: 150ms;
+  --transition-duration-normal: 200ms;
+  --transition-duration-gentle: 250ms;
+  --transition-duration-slow: 300ms;
+  --transition-duration-slower: 400ms;
+  --transition-duration-ultra-slow: 500ms;
 
-  /* Easing curve tokens */
-  --curve-accelerate-max: cubic-bezier(1, 0, 1, 1);
-  --curve-accelerate-mid: cubic-bezier(0.7, 0, 1, 0.5);
-  --curve-accelerate-min: cubic-bezier(0.8, 0, 1, 1);
-  --curve-decelerate-max: cubic-bezier(0, 0, 0, 1);
-  --curve-decelerate-mid: cubic-bezier(0, 0.5, 0, 1);
-  --curve-decelerate-min: cubic-bezier(0, 0, 0.2, 1);
-  --curve-easy-ease-max: cubic-bezier(0.8, 0, 0.2, 1);
-  --curve-easy-ease: cubic-bezier(0.33, 0, 0.67, 1);
-  --curve-linear: linear;
+  /* Easing tokens */
+  --ease-accelerate-max: cubic-bezier(1, 0, 1, 1);
+  --ease-accelerate-mid: cubic-bezier(0.7, 0, 1, 0.5);
+  --ease-accelerate-min: cubic-bezier(0.8, 0, 1, 1);
+  --ease-decelerate-max: cubic-bezier(0, 0, 0, 1);
+  --ease-decelerate-mid: cubic-bezier(0, 0.5, 0, 1);
+  --ease-decelerate-min: cubic-bezier(0, 0, 0.2, 1);
+  --ease-easy-ease-max: cubic-bezier(0.8, 0, 0.2, 1);
+  --ease-easy-ease: cubic-bezier(0.33, 0, 0.67, 1);
+  --ease-linear: linear;
 }
