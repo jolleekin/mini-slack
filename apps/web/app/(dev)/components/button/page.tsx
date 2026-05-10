@@ -1,17 +1,14 @@
 import { Button } from "@/components/ui/button/button.tsx";
 
-import { Section } from "../section.tsx";
+import { PageHeader, Section } from "../section.tsx";
 
 export default function ButtonPage() {
   return (
-    <div className="mx-auto max-w-4xl space-y-10">
-      <div>
-        <h1 className="text-2xl font-semibold">Button</h1>
-        <p className="text-gray-a11 mt-1 text-sm">
-          Interactive button component with Fluent Design variants, built on
-          Radix UI Slot.
-        </p>
-      </div>
+    <>
+      <PageHeader
+        title="Button"
+        description="Interactive button component with Fluent Design variants, built on Radix UI Slot."
+      />
 
       {/* ── Button: appearance ── */}
       <Section title="Appearance">
@@ -123,6 +120,6 @@ export default function ButtonPage() {
           <a href="#">Link via asChild</a>
         </Button>
       </Section>
-    </div>
+    </>
   );
 }

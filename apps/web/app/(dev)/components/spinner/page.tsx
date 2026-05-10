@@ -1,19 +1,16 @@
 import { Spinner } from "@/components/ui/spinner/spinner.tsx";
 
-import { Section } from "../section.tsx";
+import { PageHeader, Section } from "../section.tsx";
 
 // ── Page ───────────────────────────────────────────────────────────────────
 
 export default function SpinnerPage() {
   return (
-    <div className="mx-auto max-w-4xl space-y-10">
-      <div>
-        <h1 className="text-2xl font-semibold">Spinner</h1>
-        <p className="text-gray-a11 mt-1 text-sm">
-          Animated loading indicator using CSS masking and conic gradients,
-          ported from Fluent UI.
-        </p>
-      </div>
+    <>
+      <PageHeader
+        title="Spinner"
+        description="Animated loading indicator using CSS masking and conic gradients, ported from Fluent UI."
+      />
 
       {/* ── Spinner: primary ── */}
       <Section title="Primary (all sizes)">
@@ -71,6 +68,6 @@ export default function SpinnerPage() {
           </li>
         </ul>
       </div>
-    </div>
+    </>
   );
 }

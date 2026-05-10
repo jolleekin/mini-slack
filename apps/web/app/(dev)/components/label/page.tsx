@@ -1,16 +1,14 @@
 import { Label } from "@/components/ui/label/label.tsx";
 
-import { Section } from "../section.tsx";
+import { PageHeader, Section } from "../section.tsx";
 
 export default function LabelPage() {
   return (
-    <div className="mx-auto max-w-4xl space-y-10">
-      <div>
-        <h1 className="text-2xl font-semibold">Label</h1>
-        <p className="text-gray-a11 mt-1 text-sm">
-          Accessible label component for form inputs with Fluent Design styling.
-        </p>
-      </div>
+    <>
+      <PageHeader
+        title="Label"
+        description="Accessible label component for form inputs with Fluent Design styling."
+      />
 
       <Section title="Standalone Label">
         <Label>Email Address</Label>
@@ -54,6 +52,6 @@ export default function LabelPage() {
         <Label size="default">Default</Label>
         <Label size="lg">Large</Label>
       </Section>
-    </div>
+    </>
   );
 }

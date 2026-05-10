@@ -1,20 +1,17 @@
 import { Input } from "@/components/ui/input/input.tsx";
 import { Label } from "@/components/ui/label/label.tsx";
 
-import { Section } from "../section.tsx";
+import { PageHeader, Section } from "../section.tsx";
 
 import { FormValidationExample } from "./form-validation-example.tsx";
 
 export default function InputPage() {
   return (
-    <div className="mx-auto max-w-4xl space-y-10">
-      <div>
-        <h1 className="text-2xl font-semibold">Input</h1>
-        <p className="text-gray-a11 mt-1 text-sm">
-          Text input component with Fluent Design styling and error state
-          support.
-        </p>
-      </div>
+    <>
+      <PageHeader
+        title="Input"
+        description="Text input component with Fluent Design styling and error state support."
+      />
 
       <Section title="Normal State" layout="stack">
         <div className="max-w-sm space-y-1">
@@ -91,6 +88,6 @@ export default function InputPage() {
           />
         </div>
       </Section>
-    </div>
+    </>
   );
 }
