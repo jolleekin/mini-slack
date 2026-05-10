@@ -10,8 +10,8 @@ React 19 passes `ref` as a regular prop, so `React.forwardRef` is no longer need
 
 ```typescript
 // ✅ Correct — React 19
-export function Button({ ref, className, ...props }: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
-  return <button ref={ref} className={className} {...props} />;
+export function Button({ className, ...props }: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
+  return <button className={className} {...props} />;
 }
 
 // ❌ Incorrect — legacy pattern
