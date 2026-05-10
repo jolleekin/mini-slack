@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const components = [
   { name: "Button", href: "/components/button" },
+  { name: "Card", href: "/components/card" },
   { name: "Input", href: "/components/input" },
   { name: "Label", href: "/components/label" },
   { name: "Spinner", href: "/components/spinner" },
