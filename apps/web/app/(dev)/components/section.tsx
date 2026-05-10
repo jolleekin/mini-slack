@@ -1,4 +1,24 @@
 /**
+ * Shared page header for component showcase pages.
+ */
+export function PageHeader({
+  title,
+  description,
+}: {
+  title: string;
+  description?: string;
+}) {
+  return (
+    <div>
+      <h1 className="text-2xl font-semibold">{title}</h1>
+      {description && (
+        <p className="text-gray-a11 mt-1 text-sm">{description}</p>
+      )}
+    </div>
+  );
+}
+
+/**
  * Shared Section wrapper for component showcase pages.
  */
 export function Section({
@@ -12,10 +32,10 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-3">
-      <h2 className="text-gray-a11 text-xs font-semibold tracking-widest uppercase">
-        {title}
-      </h2>
+    <section className="border-gray-a6 grid grid-cols-1 gap-x-8 gap-y-4 border-t pt-6 md:grid-cols-[180px_1fr]">
+      <div className="md:sticky top-6 self-start">
+        <h2 className="text-gray-12 text-base font-semibold text-pretty">{title}</h2>
+      </div>
       <div
         className={
           layout === "stack"
