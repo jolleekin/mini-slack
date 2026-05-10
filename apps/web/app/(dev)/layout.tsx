@@ -5,7 +5,7 @@ export default function DevLayout({ children }: { children: React.ReactNode }) {
     notFound();
   }
   return (
-    <div className="min-h-screen bg-gray-1 text-gray-12">
+    <div className="h-screen bg-gray-1 text-gray-12">
       {children}
     </div>
   );

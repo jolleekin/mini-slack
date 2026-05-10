@@ -18,9 +18,9 @@ export default function ComponentsLayout({
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-gray-a6 bg-gray-a2 p-6">
+      <aside className="border-gray-a6 bg-gray-a2 w-64 border-r p-6">
         <div className="mb-8">
           <h1 className="text-lg font-semibold">UI Components</h1>
           <p className="text-gray-a11 mt-1 text-xs">
@@ -49,7 +49,9 @@ export default function ComponentsLayout({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-8">{children}</main>
+      <main className="flex-1 overflow-auto">
+        <div className="max-w-4xl space-y-10 p-8">{children}</div>
+      </main>
     </div>
   );
 }
