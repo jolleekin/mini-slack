@@ -16,6 +16,8 @@ export type TranslationKey<T, Depth extends number = 9> = Depth extends never
 
 export type TranslationParams = Record<string, unknown>;
 
+const PLACEHOLDER = /{{(\w+)}}/g;
+
 export function createTranslator<Translations extends Record<string, any>>(
   translations: Translations,
 ) {
@@ -35,9 +37,11 @@ export function createTranslator<Translations extends Record<string, any>>(
 
     // Replace placeholders: {{param}}.
     if (params) {
-      return Object.entries(params).reduce((acc, [k, v]) => {
-        return acc.replace(new RegExp(`{{${k}}}`, "g"), String(v));
-      }, result);
+      return result.replaceAll(PLACEHOLDER, (_, p) => {
+        const value = params[p];
+        if (value == null) console.warn(`Missing value for param {{${p}}}. Key = ${key}.`);
+        return String(value);
+      });
     }
 
     return result;
