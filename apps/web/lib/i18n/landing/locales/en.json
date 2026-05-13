@@ -1,0 +1,59 @@
+{
+  "common": {
+    "siteName": "MiniSlack",
+    "signIn": "Sign in",
+    "skipToContent": "Skip to main content",
+    "language": "Language"
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "Now in beta",
+      "headline": "Team messaging without the noise",
+      "subheadline": "A fast, focused messaging app for small teams. Real-time channels, workspaces, and file sharing — built to keep your team in sync.",
+      "cta": "Get started"
+    },
+    "features": {
+      "sectionLabel": "Features",
+      "heading": "Everything your team needs",
+      "subheading": "Built for speed and simplicity — the tools your team actually uses, without the bloat.",
+      "realtime": {
+        "name": "Real-time Messaging",
+        "description": "Instant messages across channels and direct conversations, with zero perceptible lag."
+      },
+      "workspaces": {
+        "name": "Workspaces & Channels",
+        "description": "Organise your team into focused workspaces with public and private channels."
+      },
+      "files": {
+        "name": "File Sharing",
+        "description": "Share files directly in conversations — images, documents, and more."
+      }
+    },
+    "cta": {
+      "headline": "Ready to bring your team together?",
+      "subheadline": "Get started in seconds — no credit card required. Just sign in and create your first workspace.",
+      "button": "Get started"
+    },
+    "footer": {
+      "copyright": "© {{year}} MiniSlack"
+    },
+    "meta": {
+      "title": "MiniSlack — Team Messaging",
+      "description": "A fast, focused messaging app for small teams. Real-time channels, workspaces, and file sharing — built to keep your team in sync."
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign In",
+      "subtitle": "Sign in to your account.",
+      "submit": "Sign in",
+      "loading": "Signing in…"
+    },
+    "welcome": {
+      "title": "Welcome to MiniSlack",
+      "subtitle": "Let's get you set up with a workspace.",
+      "submit": "Continue",
+      "loading": "Setting up…"
+    }
+  }
+}

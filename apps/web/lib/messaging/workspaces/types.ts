@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import {
   MAX_CHANNEL_NAME_LENGTH,
+  MAX_WORKSPACE_NAME_LENGTH,
   MAX_WORKSPACE_SLUG_LENGTH,
   SLUG_REGEX,
 } from "@/lib/messaging/constants.ts";
@@ -28,7 +29,13 @@ export type GetWorkspaceInput = z.infer<typeof GetWorkspaceInput>;
 export type GetWorkspaceOutput = WorkspaceWithRole;
 
 export const CreateWorkspaceInput = z.object({
-  name: z.string().min(1, "Workspace name is required"),
+  name: z
+    .string()
+    .min(1, "Workspace name is required")
+    .max(
+      MAX_WORKSPACE_NAME_LENGTH,
+      `Workspace name cannot be longer than ${MAX_WORKSPACE_NAME_LENGTH} characters`,
+    ),
   slug: z
     .string()
     .min(1, "Workspace URL is required")

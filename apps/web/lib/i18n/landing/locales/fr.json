@@ -1,0 +1,59 @@
+{
+  "common": {
+    "siteName": "MiniSlack",
+    "signIn": "Se connecter",
+    "skipToContent": "Aller au contenu principal",
+    "language": "Langue"
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "Maintenant en bêta",
+      "headline": "La messagerie d'équipe sans le bruit",
+      "subheadline": "Une application de messagerie rapide et ciblée pour les petites équipes. Canaux en temps réel, espaces de travail et partage de fichiers — conçue pour garder votre équipe synchronisée.",
+      "cta": "Commencer"
+    },
+    "features": {
+      "sectionLabel": "Fonctionnalités",
+      "heading": "Tout ce dont votre équipe a besoin",
+      "subheading": "Conçu pour la vitesse et la simplicité — les outils que votre équipe utilise vraiment, sans le superflu.",
+      "realtime": {
+        "name": "Messagerie en temps réel",
+        "description": "Messages instantanés sur les canaux et les conversations directes, sans latence perceptible."
+      },
+      "workspaces": {
+        "name": "Espaces de travail et canaux",
+        "description": "Organisez votre équipe dans des espaces de travail ciblés avec des canaux publics et privés."
+      },
+      "files": {
+        "name": "Partage de fichiers",
+        "description": "Partagez des fichiers directement dans les conversations — images, documents et plus encore."
+      }
+    },
+    "cta": {
+      "headline": "Prêt à réunir votre équipe ?",
+      "subheadline": "Démarrez en quelques secondes — aucune carte de crédit requise. Connectez-vous et créez votre premier espace de travail.",
+      "button": "Commencer"
+    },
+    "footer": {
+      "copyright": "© {{year}} MiniSlack"
+    },
+    "meta": {
+      "title": "MiniSlack — Messagerie d'équipe",
+      "description": "Une application de messagerie rapide et ciblée pour les petites équipes. Canaux en temps réel, espaces de travail et partage de fichiers — conçue pour garder votre équipe synchronisée."
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Connexion",
+      "subtitle": "Connectez-vous à votre compte.",
+      "submit": "Se connecter",
+      "loading": "Connexion en cours…"
+    },
+    "welcome": {
+      "title": "Bienvenue sur MiniSlack",
+      "subtitle": "Configurons votre espace de travail.",
+      "submit": "Continuer",
+      "loading": "Configuration en cours…"
+    }
+  }
+}

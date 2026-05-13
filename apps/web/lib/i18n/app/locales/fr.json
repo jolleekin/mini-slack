@@ -1,0 +1,20 @@
+{
+  "common": {
+    "loading": "Chargement…",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "language": "Langue"
+  },
+  "settings": {
+    "locale": {
+      "title": "Langue",
+      "description": "Choisissez la langue de l'interface MiniSlack.",
+      "save": "Enregistrer la préférence",
+      "saved": "Langue mise à jour."
+    }
+  },
+  "workspaces": {
+    "title": "Espaces de travail",
+    "subtitle": "Sélectionnez ou créez un espace de travail."
+  }
+}

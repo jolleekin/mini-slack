@@ -1,0 +1,20 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "language": "Language"
+  },
+  "settings": {
+    "locale": {
+      "title": "Language",
+      "description": "Choose the language for the MiniSlack interface.",
+      "save": "Save preference",
+      "saved": "Language updated."
+    }
+  },
+  "workspaces": {
+    "title": "Workspaces",
+    "subtitle": "Select or create a workspace."
+  }
+}
